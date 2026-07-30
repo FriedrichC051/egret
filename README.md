@@ -3,8 +3,7 @@
 *Rethinking Skills for Embodied AI: An Effect-Grounded Composite-Skill Framework and Benchmark.*
 
 This repository contains the code, skill pool, benchmark, and precomputed artifacts to
-reproduce all quantitative results of the paper. It is released for **anonymous peer review**
-and contains no author- or institution-identifying information.
+reproduce all quantitative results of the paper. 
 
 The project has three components:
 
@@ -245,8 +244,3 @@ python eval/code/run_confusion_curve.py --methods m1h4 bm25 dense b0 b3 b4 --mer
 - **Trainable parameters.** ESCOVER learns only two tiny heads on top of a frozen encoder
   (~28K parameters total): a multi-label Goal Parser head and an effect-grounded tie-break
   head. Everything else is symbolic.
-
-## License
-
-Released for anonymous peer review. A permissive open-source license will accompany the
-public release.
