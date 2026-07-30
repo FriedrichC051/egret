@@ -1,8 +1,9 @@
-"""Phase 4 LLM 类方法：
-- B0：把全部技能（id + name + 效果签名）塞进 prompt，让 LLM 直接选出技能集合。
-- （B3 的"选择层"、M1 复用这里的 llm_call。）
+"""Phase 4 LLM-style methods:
+- B0: stuff all skills (id + name + effect signature) into the prompt and let the LLM pick the
+  skill set directly.
+- (B3's "selection layer" and M1 reuse llm_call from here.)
 
-单跑计时/自检：
+Standalone timing/self-check:
   python router/code/llm_baselines.py --n 3
 """
 import os
@@ -16,15 +17,16 @@ sys.path.insert(0, HERE)
 from common import load_pool, load_queries, skill_sig  # noqa: E402
 
 KIMI_BASE = "https://api.moonshot.cn/v1"
-# 高速版：2~5s/次且质量与 k2.7-code 相当（普通版高峰期常 >150s 超时，不可用）
+# High-speed variant: 2-5s/call with quality on par with k2.7-code (the standard variant
+# often times out >150s during peak hours and is unusable)
 KIMI_MODEL = "kimi-k2.7-code-highspeed"
 
 _ENV_FILE = os.path.join(os.path.dirname(os.path.dirname(HERE)), ".env")  # embodied_skill/.env
 
 
 def _ensure_api_key():
-    """路由阶段在 Windows 跑时，Kimi key 不在系统环境里 —— 从 gitignored .env 读。
-    兼容 MOONSHOT_API_KEY / OPENAI_API_KEY 两种命名。"""
+    """When the routing stage runs on Windows, the Kimi key is not in the system environment --
+    read it from the gitignored .env. Supports both MOONSHOT_API_KEY / OPENAI_API_KEY names."""
     if os.environ.get("OPENAI_API_KEY"):
         return
     mk = os.environ.get("MOONSHOT_API_KEY")
@@ -42,10 +44,13 @@ def _ensure_api_key():
                 os.environ["OPENAI_API_KEY"] = v
                 return
 
-SYSTEM = ("你是具身智能任务的技能路由器。给定一个自然语言任务和一个技能库，"
-          "你要从库中选出**能共同完成该任务**的最小技能集合。"
-          "技能可以是复合技能（一条即可完成多步）或多条原子技能的组合。"
-          "只输出被选中技能的 skill_id，构成一个 JSON 字符串数组，不要输出任何解释。")
+SYSTEM = ("You are a skill router for embodied-AI tasks. Given a natural-language task and a "
+          "skill library, select from the library the minimal skill set that **together "
+          "completes the task**. "
+          "A skill may be a composite skill (one card completing multiple steps) or a "
+          "combination of several atomic skills. "
+          "Output only the skill_id of the selected skills as a JSON array of strings, "
+          "with no explanation.")
 
 
 def llm_call(system, user, model=KIMI_MODEL, base_url=KIMI_BASE, timeout=120.0,
@@ -55,7 +60,7 @@ def llm_call(system, user, model=KIMI_MODEL, base_url=KIMI_BASE, timeout=120.0,
     if base_url and "moonshot" in base_url:
         for _p in ["http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "all_proxy"]:
             os.environ.pop(_p, None)
-    # max_retries=0：关掉 SDK 自动重试，否则一次超时会重试 2 次 → 实际耗时 3×timeout
+    # max_retries=0: disable the SDK's automatic retries, otherwise one timeout retries twice -> actual cost 3x timeout
     client = OpenAI(base_url=base_url, timeout=timeout, max_retries=0)
     resp = client.chat.completions.create(
         model=model,
@@ -96,8 +101,9 @@ class B0LLMFull:
         self.base_url = base_url
 
     def select(self, query):
-        user = (f"技能库（共 {len(self.pool)} 条）：\n{self.catalog}\n\n"
-                f"任务：{query}\n\n请输出能完成该任务的最小技能集合（skill_id 的 JSON 数组）。")
+        user = (f"Skill library ({len(self.pool)} cards total):\n{self.catalog}\n\n"
+                f"Task: {query}\n\nOutput the minimal skill set that completes the task "
+                f"(a JSON array of skill_id).")
         text = llm_call(SYSTEM, user, self.model, self.base_url)
         ids = parse_id_array(text, set(self.by_id))
         return [self.by_id[i] for i in ids]
@@ -110,7 +116,7 @@ def main():
     pool = load_pool()
     queries = load_queries(n=args.n, seed=0)
     b0 = B0LLMFull(pool)
-    print(f"技能池 {len(pool)} 条；计时 {len(queries)} 次 B0 调用\n")
+    print(f"Skill pool: {len(pool)} cards; timing {len(queries)} B0 calls\n")
     for q in queries:
         t = time.time()
         chosen = b0.select(q["instruction"])
@@ -119,8 +125,8 @@ def main():
         union = set()
         for c in chosen:
             union |= skill_sig(c)
-        print(f"[{dt:5.1f}s] req={sorted(req)} -> 选中 {[c['skill_id'] for c in chosen]} "
-              f"覆盖={'✓' if union >= req else '✗'}")
+        print(f"[{dt:5.1f}s] req={sorted(req)} -> selected {[c['skill_id'] for c in chosen]} "
+              f"covered={'OK' if union >= req else 'X'}")
 
 
 if __name__ == "__main__":

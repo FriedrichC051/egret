@@ -1,19 +1,25 @@
-"""B4 = LoTa-Bench 式 LLM 逐步受限解码选技能（ICLR'24, LLMTaskPlanning）。
+"""B4 = LoTa-Bench-style LLM step-wise constrained decoding for skill selection (ICLR'24, LLMTaskPlanning).
 
-与 B0 的本质区别：**不把技能库塞进 prompt**。而是——
-  前缀 = few-shot 示例 + 任务 + 已选历史（短）；
-  每步对**技能池里每条技能**（其自然语言 name）算"作为续写的 token logprob"，
-  取 argmax（受限解码：只能在池内技能里选），append 到历史，自回归到 "done"。
-=> 本地开源 completion 模型即可（要 token logits），零 API 费用。chat-LLM 那条路由 B0 覆盖。
+Fundamental difference from B0: **does not stuff the skill library into the prompt**. Instead --
+  prefix = few-shot examples + task + selected history (short);
+  at each step, for **every skill in the pool** (its natural-language name) compute the
+  "token logprob as a continuation" and take the argmax (constrained decoding: only in-pool
+  skills can be chosen), append to the history, and autoregress until "done".
+=> A local open-source completion model suffices (token logits needed), zero API cost. The
+   chat-LLM route is covered by B0.
 
-模型：本地 HF causal LM（fp16, cuda），默认 Qwen2.5-1.5B，实验用 Qwen2.5-3B（B4_MODEL 覆盖）。
-接口：B4LoTaBench(pool).select(query, binding=None) -> [card]（与 M1/B0/B3 一致）。
+Model: local HF causal LM (fp16, cuda), default Qwen2.5-1.5B, experiments use Qwen2.5-3B (override via B4_MODEL).
+Interface: B4LoTaBench(pool).select(query, binding=None) -> [card] (consistent with M1/B0/B3).
 
-对 LoTa-Bench 原文的三处偏离（见 stage2_execution_plan.md WP3 脚注）：
-  1) 模型：原文用 2023 年 GPT-Neo/GPT-J/OPT/LLaMA-1（+GPT API），无 Qwen；我们复现方法、
-     换现代开源基座 Qwen2.5（本地 3B 的 SR≈29% 落在原文 GPT-3/4 区间内，未削弱基线）。
-  2) 受限解码：未用原文 `guidance` 库，改用等价的逐候选整串 logprob + argmax（更稳更可复现）。
-  3) 打分归一：原文 sum（等长模板短语）→ 我们 mean（复合技能 name 变长，sum 会退化成永选最短原子）。
+Three deviations from the LoTa-Bench paper (see stage2_execution_plan.md WP3 footnote):
+  1) Model: the paper uses 2023-era GPT-Neo/GPT-J/OPT/LLaMA-1 (+GPT API), no Qwen; we reproduce
+     the method with the modern open-source backbone Qwen2.5 (local 3B SR ~= 29% falls within the
+     paper's GPT-3/4 range, not weakening the baseline).
+  2) Constrained decoding: not using the paper's `guidance` library; instead an equivalent
+     per-candidate whole-string logprob + argmax (more stable and reproducible).
+  3) Score normalization: the paper uses sum (equal-length template phrases) -> we use mean
+     (composite skill names vary in length, and sum would degenerate into always picking the
+     shortest atomic).
 """
 import os
 import sys
@@ -45,7 +51,7 @@ def _name(card):
     return (card.get("name") or card.get("skill_id") or "").strip()
 
 
-_MODEL_CACHE = {}  # model_id -> (tokenizer, model)，多档池复用同一份权重（省显存/加载）
+_MODEL_CACHE = {}  # model_id -> (tokenizer, model); multiple tier pools reuse the same weights (saves VRAM/loading)
 
 
 def _load_model(model_id):
@@ -76,9 +82,9 @@ class B4LoTaBench:
         self.by_id = {c["skill_id"]: c for c in pool}
         self.max_steps = max_steps
         self.batch_size = batch_size
-        self.norm = norm  # "sum"(LoTa 原法) 或 "mean"(长度归一)
+        self.norm = norm  # "sum" (LoTa's original method) or "mean" (length-normalized)
         self.tok, self.model = _load_model(model_id)
-        # 候选文本：每条技能的 name（+ "done"）；预 tokenize 候选 token（不加特殊符）
+        # candidate texts: each skill's name (+ "done"); pre-tokenize candidate tokens (no special tokens)
         self.cand_ids = [c["skill_id"] for c in pool]
         self.cand_txt = [_name(c) for c in pool] + [DONE]
         self.cand_tok = [self.tok.encode(" " + t, add_special_tokens=False)
@@ -95,8 +101,9 @@ class B4LoTaBench:
         return [s + [pad_id] * (m - len(s)) for s in seqs], [len(s) for s in seqs]
 
     def _score_all(self, prefix):
-        """批量前缀 KV 复用：前缀按 batch 展开前向一次得 cache，
-        每批候选右拼 padding 前向一次，算完 crop 回前缀长度复用（快且省显存）。"""
+        """Batched prefix KV reuse: expand the prefix across the batch and run one forward pass
+        to obtain the cache; for each candidate batch, right-pad and run one forward pass, then
+        crop back to the prefix length for reuse (fast and VRAM-efficient)."""
         torch = self.torch
         B = self.batch_size
         pre = self.tok.encode(prefix, add_special_tokens=True)
@@ -106,21 +113,21 @@ class B4LoTaBench:
         scores = [0.0] * n
         with torch.no_grad():
             out = self.model(input_ids=torch.tensor([pre], device="cuda"),
-                             use_cache=True)                      # 前缀 batch=1（省显存）
+                             use_cache=True)                      # prefix batch=1 (saves VRAM)
             cache = out.past_key_values
-            cache.batch_repeat_interleave(B)                      # 复制到 batch B 复用
-            base_lp = torch.log_softmax(out.logits[0, -1].float(), dim=-1)  # 第一 token
+            cache.batch_repeat_interleave(B)                      # replicate to batch B for reuse
+            base_lp = torch.log_softmax(out.logits[0, -1].float(), dim=-1)  # first token
             pre_attn = torch.ones((B, plen), device="cuda", dtype=torch.long)
             for b in range(0, n, B):
                 chunk = self.cand_tok[b:b + B]
                 bs = len(chunk)
                 first = [base_lp[ct[0]].item() if ct else -1e9 for ct in chunk]
-                # 输入 = ct[:-1]（放到 prefix 之后），预测目标 = ct[1:]
+                # input = ct[:-1] (placed after the prefix), prediction target = ct[1:]
                 bodies = [ct[:-1] for ct in chunk]
                 tgts = [ct[1:] for ct in chunk]
                 lens = [len(t) for t in tgts]
                 maxL = max(lens, default=0)
-                if maxL == 0:                              # 全是单 token 候选
+                if maxL == 0:                              # all single-token candidates
                     for i, ct in enumerate(chunk):
                         s = first[i]
                         scores[b + i] = s / len(ct) if (self.norm == "mean" and ct) else s
@@ -138,7 +145,7 @@ class B4LoTaBench:
                             < torch.tensor(lens + [0] * (B - bs),
                                            device="cuda")[:, None]).long()
                 attn = torch.cat([pre_attn, new_attn], dim=1)
-                cache.crop(plen)                          # 复用前缀，去掉上批 KV
+                cache.crop(plen)                          # reuse the prefix, drop the previous batch's KV
                 o = self.model(input_ids=inp, past_key_values=cache,
                                attention_mask=attn, use_cache=True)
                 lg = o.logits.float()                      # [B, maxL, V]
@@ -155,7 +162,7 @@ class B4LoTaBench:
         history, chosen, used = [], [], set()
         for _ in range(self.max_steps):
             scores = self._score_all(self._prefix(query, history))
-            for i in used:                    # 已选技能不重复选（受限解码去重）
+            for i in used:                    # do not reselect an already-chosen skill (constrained-decoding dedup)
                 scores[i] = float("-inf")
             best = max(range(len(scores)), key=lambda i: scores[i])
             if best == len(self.pool):        # "done"
@@ -178,7 +185,7 @@ def main():
     queries = load_queries(n=args.n, seed=0)
     t0 = time.time()
     b4 = B4LoTaBench(pool, model_id=args.model, batch_size=args.batch, norm=args.norm)
-    print(f"池 {len(pool)} 条；模型 {args.model}；加载 {time.time()-t0:.1f}s\n")
+    print(f"pool {len(pool)} cards; model {args.model}; loaded {time.time()-t0:.1f}s\n")
     cov = 0
     for q in queries:
         t = time.time()
@@ -190,8 +197,8 @@ def main():
         ok = union >= req
         cov += int(ok)
         print(f"[{time.time()-t:5.1f}s] req={sorted(req)} -> {[c['skill_id'] for c in chosen]} "
-              f"覆盖(声明)={'OK' if ok else 'X'}")
-    print(f"\n覆盖(声明) {cov}/{len(queries)} = {cov/max(len(queries),1):.1%}")
+              f"covered(declared)={'OK' if ok else 'X'}")
+    print(f"\ncovered(declared) {cov}/{len(queries)} = {cov/max(len(queries),1):.1%}")
 
 
 if __name__ == "__main__":

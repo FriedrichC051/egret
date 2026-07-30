@@ -1,16 +1,21 @@
-"""L0-head：可训练多标签目标解析头（M1 正式版 L0 的"学习型"版本）。
+"""L0-head: trainable multi-label goal-parsing head (the "learned" version of the production M1 L0).
 
-结构：冻结 `bge-small-en-v1.5` 编码指令(384维) → 线性头(384->6) + sigmoid，BCE 多标签。
-标签 6 维：isHot / isCold / isClean / isSliced / isFilledWithLiquid / at_receptacle。
-训练标签 = train split(2607) 派生 required_effects；评测 = valid(211)，**不碰 eval GT 训练**。
+Architecture: freeze `bge-small-en-v1.5` to encode the instruction (384-d) -> linear head
+(384->6) + sigmoid, multi-label BCE.
+6 label dimensions: isHot / isCold / isClean / isSliced / isFilledWithLiquid / at_receptacle.
+Training labels = required_effects derived from the train split (2607); evaluation = valid (211),
+**never trains on eval GT**.
 
-公平红线：只吃 instruction；推理时 at_receptacle 与规则/LLM 一致——优先信 binding 容器。
-关键观察点：头在 required_effects(=PDDL 目标) 上训练，会学到"物体/语境→效果"的**数据先验**，
-可能预测出指令没写的效果（如 place spatula→isClean），从而在同分布 exact-match 上**超过
-"只读指令"的 90.5% 上限**——这正是"学先验补全欠定指令"的双刃剑（见 WP4·L0 定案）。
+Fairness red line: consumes only the instruction; at inference at_receptacle matches the
+rule/LLM -- prefers to trust the binding receptacle.
+Key observation: the head, trained on required_effects (= PDDL goals), learns a **data prior**
+of "object/context -> effect", and may predict effects the instruction never wrote (e.g. place
+spatula -> isClean), thereby **exceeding the 90.5% ceiling of "instruction-only"** on in-distribution
+exact-match -- exactly the double-edged sword of "learning a prior to complete underspecified
+instructions" (see WP4 - L0 decision).
 
-用法：
-  python router/code/l0_head.py            # 训练 + 在 211 报 exact-match，存权重
+Usage:
+  python router/code/l0_head.py            # train + report exact-match on 211, save weights
   python router/code/l0_head.py --epochs 300
 """
 import os
@@ -32,7 +37,7 @@ CKPT = os.path.join(HERE, os.pardir, "models", "l0_head.pt")
 
 
 def _load(split):
-    """split ∈ {train, eval}。返回 [(instruction, binding, effset)]。"""
+    """split in {train, eval}. Returns [(instruction, binding, effset)]."""
     path = os.path.join(GT_DIR, f"gt_kitchen_{split}.jsonl")
     rows = []
     for line in open(path, encoding="utf-8"):
@@ -55,15 +60,16 @@ def _encode(model, texts, np):
 
 
 def _raw_em(X, Y, Wn, bn, np, thr=0.5):
-    """裸多标签 exact-match（不加 binding，用于 val 模型选择）。"""
+    """Raw multi-label exact-match (no binding, used for val model selection)."""
     P = (1 / (1 + np.exp(-(X @ Wn + bn)))) >= thr
     return float((P == (Y >= 0.5)).all(axis=1).mean())
 
 
 def fit_head(X, Y, max_epochs=3000, lr=0.05, val_frac=0.15, patience=8,
              eval_every=25, seed=0, verbose=False):
-    """训练线性多标签头，用 train 内部 val 的 exact-match 早停，返回 best-on-val 的 (W,b,best_ep)。
-    **只切 train 内部做 val，绝不碰 eval**，避免拿测试集挑轮次。"""
+    """Train the linear multi-label head, early-stopping on the exact-match of an internal
+    train val split, returning the best-on-val (W, b, best_ep).
+    **Only splits val from within train, never touches eval**, to avoid picking epochs on the test set."""
     import numpy as np
     import torch
     torch.manual_seed(seed); np.random.seed(seed)
@@ -91,12 +97,12 @@ def fit_head(X, Y, max_epochs=3000, lr=0.05, val_frac=0.15, patience=8,
                 if bad >= patience:
                     break
     if verbose:
-        print(f"  [fit_head] best val_EM={best[0]:.1%} @ep{best[3]}（train {len(ti)}/val {len(vi)}）")
+        print(f"  [fit_head] best val_EM={best[0]:.1%} @ep{best[3]} (train {len(ti)}/val {len(vi)})")
     return best[1], best[2], best[3]
 
 
 class L0HeadParser:
-    """训练好的头，parse(instruction, binding) -> 效果集（与 parse_goal 同签名）。"""
+    """The trained head; parse(instruction, binding) -> effect set (same signature as parse_goal)."""
     def __init__(self, ckpt=CKPT, thresh=0.5):
         import torch
         from sentence_transformers import SentenceTransformer
@@ -136,23 +142,23 @@ def main():
     from sentence_transformers import SentenceTransformer
 
     tr = _load("train"); ev = _load("eval")
-    print(f"train {len(tr)} / eval {len(ev)}；backbone={os.path.basename(_resolve_bge())}")
+    print(f"train {len(tr)} / eval {len(ev)}; backbone={os.path.basename(_resolve_bge())}")
 
     t0 = time.time()
     enc = SentenceTransformer(_resolve_bge())
     Xtr = _encode(enc, [r[0] for r in tr], np)
     Xev = _encode(enc, [r[0] for r in ev], np)
     Ytr = np.stack([_multihot(r[2], np) for r in tr])
-    print(f"编码完成 {time.time()-t0:.1f}s；维度 {Xtr.shape[1]}")
+    print(f"encoding done {time.time()-t0:.1f}s; dim {Xtr.shape[1]}")
 
     Wn, bn, best_ep = fit_head(Xtr, Ytr, max_epochs=args.max_epochs, lr=args.lr,
                                patience=args.patience, seed=args.seed, verbose=True)
-    print(f"训练完成（早停 best@ep{best_ep}），用时 {time.time()-t0:.1f}s")
+    print(f"training done (early stop best@ep{best_ep}), time {time.time()-t0:.1f}s")
 
     os.makedirs(os.path.dirname(CKPT), exist_ok=True)
     torch.save({"W": Wn, "b": bn, "labels": LABELS}, CKPT)
 
-    # ---- 在 211 评测：head vs 规则 vs GT（exact-match），并加 binding 修正 ----
+    # ---- Evaluate on 211: head vs rule vs GT (exact-match), with binding correction ----
     def head_pred(x, binding):
         logit = x @ Wn + bn
         prob = 1 / (1 + np.exp(-logit))
@@ -162,8 +168,8 @@ def main():
         return g
 
     head_ok = rule_ok = 0
-    over = under = 0   # head 多预测 / 少预测（相对 GT）
-    beat_ceiling = []  # head 对但规则错（含"猜出指令没写的效果"）
+    over = under = 0   # head over-predicts / under-predicts (relative to GT)
+    beat_ceiling = []  # head correct but rule wrong (incl. "guessing effects the instruction didn't write")
     for i, (ins, binding, req) in enumerate(ev):
         g_head = head_pred(Xev[i], binding)
         g_rule = parse_goal(ins, binding)
@@ -176,13 +182,13 @@ def main():
         if req - g_head:
             under += 1
     n = len(ev)
-    print(f"\nexact-match（211 valid）：")
-    print(f"  L0-head(训练)  = {head_ok}/{n} = {head_ok/n:.1%}")
-    print(f"  规则 parse_goal = {rule_ok}/{n} = {rule_ok/n:.1%}   （LLM few-shot 参考 ~90%）")
-    print(f"  head 多预测 {over} 题 / 少预测 {under} 题")
-    print(f"\nhead 对而规则错的题（{len(beat_ceiling)} 道，含'靠先验猜出指令没写的效果'）：")
+    print(f"\nexact-match (211 valid):")
+    print(f"  L0-head(trained) = {head_ok}/{n} = {head_ok/n:.1%}")
+    print(f"  rule parse_goal  = {rule_ok}/{n} = {rule_ok/n:.1%}   (LLM few-shot reference ~90%)")
+    print(f"  head over-predicts {over} items / under-predicts {under} items")
+    print(f"\nItems where head is right but rule is wrong ({len(beat_ceiling)}, incl. 'guessing via prior the effects the instruction didn't write'):")
     for ins, r, g in beat_ceiling[:15]:
-        print(f"  - {ins!r}\n    规则={r}  GT={g}")
+        print(f"  - {ins!r}\n    rule={r}  GT={g}")
 
 
 if __name__ == "__main__":

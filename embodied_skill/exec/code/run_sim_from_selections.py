@@ -1,13 +1,15 @@
-"""Phase 4 仿真阶段（方案 B：在 WSL 跑，消费 Windows 路由阶段产出的 selections.json）。
+"""Phase 4 simulation stage (option B: run in WSL, consuming selections.json produced by the Windows routing stage).
 
-对 selections.json 里每题、每个路由方法的 chosen_ids，在其所属场景执行这组技能，
-用与 Phase 3 相同的成功检查器算 SR/GC；额外跑 gold（可执行金标准）作天花板对照。
-最后打印"方法 × SR/GC"对比表并写 sim_results.json。
+For each query and each routing method's chosen_ids in selections.json, execute that set of skills
+in the corresponding scene and compute SR/GC with the same success checker used in Phase 3; additionally
+run gold (the executable gold standard) as a ceiling reference. Finally print a "method x SR/GC" comparison
+table and write sim_results.json.
 
-执行规则：chosen_ids 里的卡按序执行——复合卡执行其 sub_skills，原子卡执行自身
-(skill_id + params)；效果 flag 全程峰值累积，最后统一按"扣除初始态"判定达成。
+Execution rules: the cards in chosen_ids are executed in order -- a composite card runs its sub_skills, an
+atomic card runs itself (skill_id + params); effect flags are accumulated as peaks throughout, and success is
+finally judged uniformly by "subtracting the initial state".
 
-用法（WSL，GPU 显示环境）：
+Usage (WSL, GPU display environment):
   DISPLAY=:0 GALLIUM_DRIVER=d3d12 python exec/code/run_sim_from_selections.py \
       --selections eval/datasets/selections.json --limit 30
 """
@@ -24,7 +26,7 @@ SKILLS_CODE = os.path.join(ROOT, "skills", "code")
 sys.path.insert(0, HERE)
 sys.path.insert(0, SKILLS_CODE)
 import atomic_bodies as ab                                     # noqa: E402
-# 复用 Phase 3 的执行/检查器件
+# Reuse Phase 3's executor / checker components
 from run_calibration import (                                  # noqa: E402
     load_pool_index, find_target_objs, read_state_flags, check_success,
     build_exec_gold_index, pick_exec_gold,
@@ -33,8 +35,8 @@ from run_calibration import (                                  # noqa: E402
 
 
 def card_to_steps(card):
-    """把一张技能卡拆成 [(skill, arg_names)] 步骤序列。
-    复合卡 -> sub_skills；原子卡 -> 单步(自身 skill_id + params)。"""
+    """Break a skill card into a sequence of [(skill, arg_names)] steps.
+    Composite card -> sub_skills; atomic card -> single step (its own skill_id + params)."""
     subs = card.get("sub_skills")
     if subs:
         return [(st["skill"], st.get("args", [])) for st in subs]
@@ -42,7 +44,7 @@ def card_to_steps(card):
 
 
 def execute_chosen(ctrl, cards, bindings):
-    """按序执行一组技能卡，峰值累积效果 flag，返回 (flags, did, placed, log)。"""
+    """Execute a set of skill cards in order, accumulating effect flags as peaks, returning (flags, did, placed, log)."""
     flags = dict(EMPTY_FLAGS)
     did = dict(EMPTY_FLAGS)
     placed_to_target = False
@@ -94,13 +96,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--selections", default=os.path.join(EVAL_DATA, "selections.json"))
     ap.add_argument("--methods", nargs="+", default=None,
-                    help="要仿真的方法名（默认 selections 里出现的全部）")
+                    help="method names to simulate (default: all that appear in selections)")
     ap.add_argument("--gold", action="store_true", default=True,
-                    help="附带跑可执行金标准作天花板对照（默认开）")
+                    help="additionally run the executable gold standard as a ceiling reference (on by default)")
     ap.add_argument("--no-gold", dest="gold", action="store_false")
-    ap.add_argument("--limit", type=int, default=0, help="仅跑前 N 题（0=全部）")
+    ap.add_argument("--limit", type=int, default=0, help="run only the first N queries (0=all)")
     ap.add_argument("--merge", action="store_true",
-                    help="只重算本次 conds 并合并进已有 sim_results（保留其它方法结果）")
+                    help="only recompute this run's conds and merge into existing sim_results (keep other methods' results)")
     ap.add_argument("--out", default=os.path.join(EVAL_DATA, "sim_results.json"))
     args = ap.parse_args()
 
@@ -110,7 +112,7 @@ def main():
         queries = queries[:args.limit]
 
     present = sorted({m for e in queries for m in e.get("methods", {})})
-    methods = args.methods or present   # "gold" 亦可作为 methods 传入，循环里特殊处理
+    methods = args.methods or present   # "gold" can also be passed as a method, handled specially in the loop
     pool = load_pool_index()
     exec_gold_index = build_exec_gold_index(pool)
 
@@ -122,12 +124,12 @@ def main():
     ctx = {"ctrl": make_controller()}
 
     def safe_run(task, cards, binding):
-        """执行一条件；THOR 后端超时/崩溃则重启 controller 后重试一次，仍失败记 SR=False。"""
+        """Execute one condition; if the THOR backend times out/crashes, restart the controller and retry once, still failing records SR=False."""
         for attempt in range(2):
             try:
                 return run_one(ctx["ctrl"], task, cards, binding)
             except Exception as ex:
-                print(f"    !! THOR 异常({ex.__class__.__name__})，重启 controller…", flush=True)
+                print(f"    !! THOR error ({ex.__class__.__name__}), restarting controller...", flush=True)
                 try:
                     ctx["ctrl"].stop()
                 except Exception:
@@ -137,18 +139,18 @@ def main():
 
     run_conds = list(dict.fromkeys(list(methods) + (["gold"] if args.gold else [])))
     per_query = []
-    print(f"== Phase4 仿真：{len(queries)} 题 × 本次跑 {run_conds}"
-          f"{'（合并已有）' if args.merge else ''} ==\n", flush=True)
+    print(f"== Phase4 simulation: {len(queries)} queries x this run {run_conds}"
+          f"{' (merge existing)' if args.merge else ''} ==\n", flush=True)
 
     def dump_summary():
-        # 汇总从 per_query 现算，覆盖所有出现过的方法（合并模式下含历史方法）
+        # Summary is computed live from per_query, covering all methods seen (including historical methods in merge mode)
         all_m = list(dict.fromkeys([m for r in per_query for m in r["res"]]))
         agg = {m: [0, 0.0, 0] for m in all_m}
         for r in per_query:
             for m, v in r["res"].items():
                 agg[m][0] += int(v["SR"]); agg[m][1] += v["GC"]; agg[m][2] += 1
         done = len(per_query)
-        print(f"\n============ Phase4 仿真汇总（{done}/{len(queries)} 题）============")
+        print(f"\n============ Phase4 simulation summary ({done}/{len(queries)} queries) ============")
         print(f"{'method':14} {'SR':>12} {'GC':>8}")
         for m in all_m:
             a = agg[m]; nn = max(1, a[2])
@@ -158,7 +160,7 @@ def main():
                        "summary": {m: {"SR": agg[m][0] / max(1, agg[m][2]),
                                        "GC": agg[m][1] / max(1, agg[m][2])} for m in all_m},
                        "per_query": per_query}, f, ensure_ascii=False, indent=2)
-        print(f"已写 {args.out}", flush=True)
+        print(f"wrote {args.out}", flush=True)
 
     try:
         for e in queries:
@@ -169,7 +171,7 @@ def main():
             binding.setdefault("liquid", "water")
             binding.setdefault("target", binding.get("obj"))
             rec = {"task_id": e["task_id"], "task_type": e["task_type"],
-                   "res": dict(prev_res.get(e["task_id"], {}))}   # 合并模式保留历史方法
+                   "res": dict(prev_res.get(e["task_id"], {}))}   # merge mode keeps historical methods
             line = f"[{e['task_type'][:16]:16}] {e['task_id'][:20]:20} req={sorted(e['required_effects'])}"
             for m in run_conds:
                 if m == "gold":

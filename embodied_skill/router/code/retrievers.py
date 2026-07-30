@@ -1,7 +1,7 @@
-"""Phase 4 检索器：B1 BM25（纯词面）、B2 Dense（稠密向量，稍后接入）。
+"""Phase 4 retrievers: B1 BM25 (pure lexical), B2 Dense (dense vectors, wired in later).
 
-统一接口：
-  retriever.rank(query_text) -> 按分数降序的 card 列表（全池排序）。
+Unified interface:
+  retriever.rank(query_text) -> list of cards sorted by descending score (full-pool ranking).
 """
 import os
 from common import skill_doc, tokenize
@@ -11,7 +11,8 @@ _LOCAL_BGE = os.path.join(_HERE, os.pardir, "models", "bge-small-en-v1.5")
 
 
 def _resolve_bge():
-    """优先用本地已下载目录，避免联网/缓存符号链接问题；否则回退 hub id。"""
+    """Prefer a locally downloaded directory to avoid network/cache-symlink issues;
+    otherwise fall back to the hub id."""
     env = os.environ.get("BGE_MODEL_DIR")
     if env and os.path.isdir(env):
         return env
@@ -36,9 +37,11 @@ class BM25Retriever:
 
 
 class DenseRetriever:
-    """B2 稠密检索：BGE 英文向量模型（技能卡/query 均已英文，无需多语模型）。
+    """B2 dense retrieval: BGE English vector model (skill cards/queries are already English,
+    so no multilingual model is needed).
 
-    bge-small-en-v1.5 约定：passage 直接编码，query 前加检索指令前缀。"""
+    bge-small-en-v1.5 convention: passages are encoded directly; queries are prefixed with a
+    retrieval-instruction prefix."""
     name = "B2-Dense"
     Q_PREFIX = "Represent this sentence for searching relevant passages: "
 

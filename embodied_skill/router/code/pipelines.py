@@ -1,9 +1,11 @@
-"""Phase 4 流水线方法：
-- B3：SkillFlow 缩水版（免训练三阶段）——Dense 检索 top-K → 交叉编码器重排 top-M
-      → LLM 从 M 条候选里选最小技能集合。相比 B0（看全 150 条）只让 LLM 看 M 条，
-      相比 B2（纯向量 top-1）多了重排 + LLM 决策。这是"通用强 baseline"的代表。
+"""Phase 4 pipeline methods:
+- B3: a slimmed-down SkillFlow (training-free three-stage) -- Dense retrieval top-K ->
+      cross-encoder rerank top-M -> LLM picks the minimal skill set from the M candidates.
+      Compared with B0 (which sees all 150 cards) the LLM only sees M; compared with B2
+      (pure-vector top-1) it adds reranking + an LLM decision. This represents the
+      "generic strong baseline".
 
-单跑自检：
+Standalone self-check:
   python router/code/pipelines.py --n 3
 """
 import os
@@ -50,19 +52,19 @@ class B3SkillFlow:
         self.reranker = CrossEncoder(_resolve_reranker())
 
     def select(self, query):
-        # ① Dense 检索 top-K
+        # (1) Dense retrieval top-K
         cand = self.retriever.rank(query)[:self.k]
-        # ② 交叉编码器重排 → top-M
+        # (2) cross-encoder rerank -> top-M
         pairs = [(query, skill_doc(c)) for c in cand]
         scores = self.reranker.predict(pairs)
         order = sorted(range(len(cand)), key=lambda i: -scores[i])
         short = [cand[i] for i in order[:self.m]]
-        # ③ LLM 从 M 条候选里选最小集合
+        # (3) LLM picks the minimal set from the M candidates
         by_id = {c["skill_id"]: c for c in short}
-        user = (f"技能候选（共 {len(short)} 条，已按相关度排序）：\n{_catalog(short)}\n\n"
-                f"任务：{query}\n\n请从上面候选中选出能完成该任务的最小技能集合"
-                f"（skill_id 的 JSON 数组，只能选候选里的）。")
-        text = llm_call(SYSTEM, user, timeout=120.0)  # 对齐 b0：60s 在 API 高峰会大面积超时
+        user = (f"Skill candidates ({len(short)} total, sorted by relevance):\n{_catalog(short)}\n\n"
+                f"Task: {query}\n\nFrom the candidates above, select the minimal skill set that "
+                f"completes the task (a JSON array of skill_id, choosing only from the candidates).")
+        text = llm_call(SYSTEM, user, timeout=120.0)  # aligned with b0: 60s would mass-timeout during API peaks
         ids = parse_id_array(text, set(by_id))
         return [by_id[i] for i in ids]
 
@@ -76,7 +78,7 @@ def main():
     pool = load_pool()
     queries = load_queries(n=args.n, seed=0)
     b3 = B3SkillFlow(pool, k=args.k, m=args.m)
-    print(f"技能池 {len(pool)} 条；B3 检索top{args.k}→重排top{args.m}→LLM选\n")
+    print(f"Skill pool: {len(pool)} cards; B3 retrieval top{args.k} -> rerank top{args.m} -> LLM select\n")
     for q in queries:
         t = time.time()
         chosen = b3.select(q["instruction"])
@@ -86,7 +88,7 @@ def main():
         for c in chosen:
             union |= skill_sig(c)
         print(f"[{dt:5.1f}s] req={sorted(req)} -> {[c['skill_id'] for c in chosen]} "
-              f"覆盖={'✓' if union >= req else '✗'}")
+              f"covered={'OK' if union >= req else 'X'}")
 
 
 if __name__ == "__main__":

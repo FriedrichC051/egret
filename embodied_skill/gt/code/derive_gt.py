@@ -1,16 +1,18 @@
-"""Phase 2：从 ALFRED 任务派生路由 Ground-Truth（金标准技能集 + 效果签名）。
+"""Derive routing ground truth (gold-standard skill set + effect signatures) from ALFRED tasks.
 
-对每道题：
-  1. 由 task_type + pddl_params 推出"必须达成的目标效果" required_effects（角色化：obj/recep）。
-  2. 在技能池上做 set-cover，给出两种等价的最简金标准答案：
-       - gt_composite_set：允许用复合技能（通常 1~2 个技能）
-       - gt_atomic_set   ：只用原子技能（多技能）
-  3. 评测时判正确的准则：路由器选中技能的目标效果并集 ⊇ required_effects（等价即算对）。
+For each task:
+  1. From task_type + pddl_params, derive the "target effects that must be achieved",
+     required_effects (role-based: obj/recep).
+  2. Run set-cover over the skill pool to give two equivalent minimal gold answers:
+       - gt_composite_set: composite skills allowed (usually 1~2 skills)
+       - gt_atomic_set   : atomic skills only (more skills)
+  3. Correctness criterion at eval time: the union of the selected skills' target effects
+     must be a superset of required_effects (equivalent coverage counts as correct).
 
-用法：
-  python gt/code/derive_gt.py                       # 全量 1149 题
+Usage:
+  python gt/code/derive_gt.py                       # full set
   python gt/code/derive_gt.py --tasks tasks_kitchen_sample.jsonl --example
-输出：embodied_skill/gt/datasets/gt_kitchen.jsonl
+Output: embodied_skill/gt/datasets/gt_kitchen.jsonl
 """
 import os
 import sys
@@ -19,10 +21,10 @@ import argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))          # gt/code/
 ROOT = os.path.dirname(os.path.dirname(HERE))              # embodied_skill/
-SKILLS_CODE = os.path.join(ROOT, "skills", "code")         # 可导入模块
-SKILLS_DATA = os.path.join(ROOT, "skills", "datasets")     # 技能卡 JSON
-TASKS_DATA = os.path.join(ROOT, "data", "datasets")        # 任务 jsonl
-GT_DATA = os.path.join(HERE, os.pardir, "datasets")        # gt/datasets/ 输出
+SKILLS_CODE = os.path.join(ROOT, "skills", "code")         # importable modules
+SKILLS_DATA = os.path.join(ROOT, "skills", "datasets")     # skill-card JSON
+TASKS_DATA = os.path.join(ROOT, "data", "datasets")        # task jsonl
+GT_DATA = os.path.join(HERE, os.pardir, "datasets")        # gt/datasets/ output
 sys.path.insert(0, SKILLS_CODE)
 from skill_effects import goal_signature  # noqa: E402
 
@@ -35,17 +37,17 @@ def load_json(p):
 def load_pool():
     atoms = load_json(os.path.join(SKILLS_DATA, "atomic_skills.json"))
     comps = load_json(os.path.join(SKILLS_DATA, "composite_skills_seed.json"))
-    # 追加已通过校验的 LLM 生成卡（若存在）
+    # Append validated LLM-generated cards (if present)
     clean = os.path.join(SKILLS_DATA, "pool_clean.json")
     extra = load_json(clean) if os.path.exists(clean) else []
     return atoms, comps, extra
 
 
 def task_required_effects(task):
-    """由 task_type + pddl_params 推出目标效果 token 集合 + 角色绑定。"""
+    """Derive the target-effect token set + role binding from task_type + pddl_params."""
     tt = task["task_type"]
     p = task.get("pddl_params", {})
-    eff = {"at_receptacle"}  # 都要把目标物放进 parent_target
+    eff = {"at_receptacle"}  # always place the target object into parent_target
     if "heat" in tt:
         eff.add("isHot")
     if "cool" in tt:
@@ -59,11 +61,11 @@ def task_required_effects(task):
 
 
 def greedy_cover(required, candidates):
-    """candidates: list of (skill_id, goal_sig set)。贪心最小覆盖。
-    偏好：单步覆盖越多越好；平局时技能数更少。返回 (chosen_ids, covered?, covered_set)。"""
+    """candidates: list of (skill_id, goal_sig set). Greedy minimal cover.
+    Preference: cover more per step; break ties toward fewer skills. Returns (chosen_ids, covered?, covered_set)."""
     remaining = set(required)
     chosen = []
-    # 只考虑有目标效果、且与 required 有交集的技能
+    # only consider skills that have target effects and intersect required
     cands = [(sid, sig) for sid, sig in candidates if sig & required]
     while remaining:
         best = None
@@ -88,11 +90,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tasks", default="tasks_kitchen.jsonl")
     ap.add_argument("--out", default=os.path.join(GT_DATA, "gt_kitchen.jsonl"))
-    ap.add_argument("--example", action="store_true", help="额外详细打印一道加热切片题")
+    ap.add_argument("--example", action="store_true", help="also print one heat+slice task in detail")
     args = ap.parse_args()
 
     atoms, comps, extra = load_pool()
-    # GT 金标准只能由"正例技能"覆盖，绝不能选中干扰项（否则金标准被李鬼污染，破坏 GT 可信度）。
+    # The GT gold standard may only be covered by positive skills, never distractors
+    # (otherwise the gold set gets contaminated and GT credibility breaks).
     gold_extra = [s for s in extra if not s.get("is_distractor")]
     atomic_cands = build_candidates(atoms)
     full_cands = build_candidates(atoms + comps + gold_extra)
@@ -130,31 +133,31 @@ def main():
         for r in rows:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
-    # 统计
+    # Statistics
     from collections import Counter
     comp_sizes = Counter(len(r["gt_composite_set"]) for r in rows)
     atom_sizes = Counter(len(r["gt_atomic_set"]) for r in rows)
-    print(f"== Phase2 GT 派生完成：{len(rows)} 题 -> {args.out} ==")
-    print("cover 不完整的题:", incomplete)
-    print("gt_composite_set 大小分布:", dict(sorted(comp_sizes.items())))
-    print("gt_atomic_set 大小分布:", dict(sorted(atom_sizes.items())))
+    print(f"== GT derivation done: {len(rows)} tasks -> {args.out} ==")
+    print("tasks with incomplete cover:", incomplete)
+    print("gt_composite_set size distribution:", dict(sorted(comp_sizes.items())))
+    print("gt_atomic_set size distribution:", dict(sorted(atom_sizes.items())))
 
     if args.example and example_row:
         r, t = example_row
-        print("\n================ 一道真实题的完整 GT 例子 ================")
-        print("task_id:", r["task_id"], "| 场景:", r["floor_plan"])
-        print("任务指令:", t["instruction"])
+        print("\n================ Full GT example for one real task ================")
+        print("task_id:", r["task_id"], "| scene:", r["floor_plan"])
+        print("instruction:", t["instruction"])
         print("task_type:", r["task_type"], "| pddl_params:", t["pddl_params"])
         seq = " -> ".join(a["action"] for a in t["high_pddl_actions"])
-        print("ALFRED 子目标序列:", seq)
-        print("→ 派生的 required_effects(必须达成):", r["required_effects"])
-        print("  绑定 obj=%s, receptacle=%s" % (r["binding"]["obj"], r["binding"]["receptacle"]))
-        print("→ 金标准(复合技能版) gt_composite_set:", r["gt_composite_set"])
+        print("ALFRED subgoal sequence:", seq)
+        print("-> derived required_effects (must achieve):", r["required_effects"])
+        print("  binding obj=%s, receptacle=%s" % (r["binding"]["obj"], r["binding"]["receptacle"]))
+        print("-> gold standard (composite) gt_composite_set:", r["gt_composite_set"])
         for sid in r["gt_composite_set"]:
             if sid in comp_index:
                 print("     -", sid, "effects=", comp_index[sid]["effects"])
-        print("→ 金标准(原子技能版) gt_atomic_set:", r["gt_atomic_set"])
-        print("  两者都覆盖 required_effects → set-cover 意义下等价，路由器给出任一个都算对。")
+        print("-> gold standard (atomic) gt_atomic_set:", r["gt_atomic_set"])
+        print("  Both cover required_effects -> equivalent under set-cover; the router giving either counts as correct.")
 
 
 if __name__ == "__main__":

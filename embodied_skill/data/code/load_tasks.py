@@ -1,12 +1,13 @@
-"""Phase 0 数据加载：从 ALFRED Lite 轨迹 JSON 中筛出"厨房 + 2 个任务类型"的题目，
-蒸馏出 Pilot 需要的字段（含 high_pddl 子目标序列 = GT 派生原料），写成小 jsonl。
+"""Data loading: filter "kitchen + selected task types" from ALFRED-lite trajectory JSON,
+distill the fields we need (including the high_pddl subgoal sequence = raw material for GT),
+and write them out as compact jsonl.
 
-用法（在 WSL 中运行，需先下载 ALFRED，详见 README）：
+Usage (run under WSL; download ALFRED first, see README):
     python embodied_skill/data/code/load_tasks.py
 
-输入：~/alfred_data/json_2.1.0/{train,valid_seen,valid_unseen}/.../traj_data.json
-输出：embodied_skill/data/datasets/tasks_kitchen.jsonl        (全部命中题)
-      embodied_skill/data/datasets/tasks_kitchen_sample.jsonl (均衡抽样 ~100 题)
+Input:  ~/alfred_data/json_2.1.0/{train,valid_seen,valid_unseen}/.../traj_data.json
+Output: embodied_skill/data/datasets/tasks_kitchen.jsonl        (all matching tasks)
+        embodied_skill/data/datasets/tasks_kitchen_sample.jsonl (balanced sample ~100 tasks)
 """
 import os
 import json
@@ -16,27 +17,27 @@ from collections import Counter, defaultdict
 
 ALFRED_ROOT = os.path.expanduser("~/alfred_data/json_2.1.0")
 OUT_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "datasets")
-# WP1（Stage II）：任务类型 2→4，全部落在"效果签名 GT"可信支持范围内。
+# Task types kept, all within the effect-signature GT's reliable support:
 #   pick_and_place_simple          -> at_receptacle
 #   pick_heat_then_place_in_recep  -> isHot + at_receptacle
 #   pick_cool_then_place_in_recep  -> isCold + at_receptacle
 #   pick_clean_then_place_in_recep -> isClean + at_receptacle
-# （slice 作为修饰：pddl_params.object_sliced 触发 isSliced，可叠加在上述类型上）
-# 明确排除（GT 框架不覆盖，见 stage2 计划 WP1）：
-#   pick_two_obj_and_place          -> 需物体实例识别/计数（LoTa-Bench 亦排除）
-#   pick_and_place_with_movable_recep -> "放进可移动容器再整体放置"双重放置，at_receptacle 无法如实刻画
-#   look_at_obj_in_light            -> examine 无对应效果 token（且厨房场景本就无此类）
+# (slice is a modifier: pddl_params.object_sliced triggers isSliced, stackable on the above)
+# Explicitly excluded (not covered by the GT framework):
+#   pick_two_obj_and_place          -> needs object-instance identification/counting (LoTa-Bench also excludes it)
+#   pick_and_place_with_movable_recep -> "put into a movable receptacle then place the whole thing" double placement; at_receptacle cannot faithfully describe it
+#   look_at_obj_in_light            -> examine has no corresponding effect token (and does not occur in kitchen scenes)
 WANT_TYPES = {
     "pick_and_place_simple",
     "pick_heat_then_place_in_recep",
     "pick_cool_then_place_in_recep",
     "pick_clean_then_place_in_recep",
 }
-# AI2-THOR 厨房场景编号为 1~30
+# AI2-THOR kitchen scenes are numbered 1~30
 def is_kitchen(scene_num):
     return scene_num is not None and 1 <= int(scene_num) <= 30
 
-SAMPLE_PER_TYPE = 50  # 每类抽多少（用于快速 sample 集）
+SAMPLE_PER_TYPE = 50  # how many per type (for the quick sample set)
 
 
 def load_one(traj_path):
@@ -62,8 +63,8 @@ def load_one(traj_path):
         "scene_num": int(scene),
         "floor_plan": d.get("scene", {}).get("floor_plan"),
         "pddl_params": d.get("pddl_params", {}),
-        "high_pddl_actions": high,     # 子目标动作序列（GT 原料）
-        "instruction": instruction,     # 任务级自然语言（router 的 query）
+        "high_pddl_actions": high,     # subgoal action sequence (raw material for GT)
+        "instruction": instruction,     # task-level natural language (the router's query)
         "step_instructions": step_instr,
         "source_path": traj_path,
     }
@@ -71,7 +72,7 @@ def load_one(traj_path):
 
 def main():
     if not os.path.isdir(ALFRED_ROOT):
-        raise SystemExit(f"未找到数据目录 {ALFRED_ROOT}，请先运行 fetch_alfred_lite.sh 下载解压。")
+        raise SystemExit(f"Data directory {ALFRED_ROOT} not found; run fetch_alfred_lite.sh to download and extract it first.")
     os.makedirs(OUT_DIR, exist_ok=True)
 
     rows = []
@@ -83,13 +84,13 @@ def main():
                 r["split"] = split
                 rows.append(r)
 
-    # 统计
+    # Statistics
     by_type = Counter(r["task_type"] for r in rows)
     by_split = Counter(r["split"] for r in rows)
-    print(f"== 命中题目统计（厨房 + {len(WANT_TYPES)} 类型） ==")
-    print("总数:", len(rows))
-    print("按类型:", dict(by_type))
-    print("按 split:", dict(by_split))
+    print(f"== Matched task stats (kitchen + {len(WANT_TYPES)} types) ==")
+    print("total:", len(rows))
+    print("by type:", dict(by_type))
+    print("by split:", dict(by_split))
 
     def dump(path, items):
         with open(path, "w", encoding="utf-8") as f:
@@ -97,24 +98,24 @@ def main():
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
         return path
 
-    # 全量写出（含 split 字段）
+    # Write the full set (with the split field)
     full_path = dump(os.path.join(OUT_DIR, "tasks_kitchen.jsonl"), rows)
-    print("已写全量:", full_path, f"({len(rows)} 题)")
+    print("wrote full set:", full_path, f"({len(rows)} tasks)")
 
-    # WP9(a)：headline 评测集 = valid_seen + valid_unseen（按 ALFRED 官方 split，天然泛化轴）
+    # Headline eval set = valid_seen + valid_unseen (ALFRED official split, a natural generalization axis)
     eval_rows = [r for r in rows if r["split"] in ("valid_seen", "valid_unseen")]
     eval_path = dump(os.path.join(OUT_DIR, "tasks_kitchen_eval.jsonl"), eval_rows)
     ev_split = Counter(r["split"] for r in eval_rows)
     ev_type = Counter(r["task_type"] for r in eval_rows)
-    print(f"已写评测集(valid_seen+unseen, {len(eval_rows)} 题):", eval_path)
-    print("  eval 按 split:", dict(ev_split), "| 按类型:", dict(ev_type))
+    print(f"wrote eval set (valid_seen+unseen, {len(eval_rows)} tasks):", eval_path)
+    print("  eval by split:", dict(ev_split), "| by type:", dict(ev_type))
 
-    # WP5：训练池 = train split（供 L0~L4 训练/合成，与评测场景解耦）
+    # Training pool = train split (for L0/L4 training/synthesis, decoupled from eval scenes)
     train_rows = [r for r in rows if r["split"] == "train"]
     train_path = dump(os.path.join(OUT_DIR, "tasks_kitchen_train.jsonl"), train_rows)
-    print(f"已写训练集(train, {len(train_rows)} 题):", train_path)
+    print(f"wrote train set (train, {len(train_rows)} tasks):", train_path)
 
-    # 均衡抽样（每类各取 SAMPLE_PER_TYPE，快速冒烟用；优先 valid 便于当评测）
+    # Balanced sample (SAMPLE_PER_TYPE per type, for quick smoke tests)
     random.seed(42)
     buckets = defaultdict(list)
     for r in rows:
@@ -124,10 +125,10 @@ def main():
         random.shuffle(items)
         sample.extend(items[:SAMPLE_PER_TYPE])
     sample_path = dump(os.path.join(OUT_DIR, "tasks_kitchen_sample.jsonl"), sample)
-    print(f"已写抽样({len(sample)} 题):", sample_path)
+    print(f"wrote sample ({len(sample)} tasks):", sample_path)
 
-    # 打印 2 个示例，直观看 high_pddl 子目标序列
-    print("\n== 示例（每类 1 个） ==")
+    # Print a few examples to eyeball the high_pddl subgoal sequences
+    print("\n== Examples (one per type) ==")
     shown = set()
     for r in rows:
         if r["task_type"] in shown:
@@ -135,8 +136,8 @@ def main():
         shown.add(r["task_type"])
         seq = " -> ".join(a["action"] for a in r["high_pddl_actions"])
         print(f"\n[{r['task_type']}] scene={r['floor_plan']} id={r['task_id']}")
-        print("  指令:", r["instruction"][:90])
-        print("  子目标序列:", seq)
+        print("  instruction:", r["instruction"][:90])
+        print("  subgoal sequence:", seq)
         print("  pddl_params:", r["pddl_params"])
         if len(shown) >= len(WANT_TYPES):
             break

@@ -1,16 +1,17 @@
-"""WP8 产出3：混淆度曲线（Confusion-density curve）。
+"""WP8 output 3: confusion-density curve.
 
-三档池 pool_tier_{low,mid,high} 共享同一 34 金标准基准，仅改干扰密度(1/3/6)。
-为让"混淆度"成为唯一自变量，只在【答案落在该 34 基准子集内】的 query 上评测
-（否则 tier 池里无正确技能，不公平）；三档共用同一答案集 = 受控对比。
+The three-tier pools pool_tier_{low,mid,high} share the same 34 gold-standard baseline, changing
+only the distractor density (1/3/6). To make "confusion" the sole independent variable, we only
+evaluate on queries [whose answer lies within the 34-baseline subset] (otherwise a tier pool has
+no correct skill, which is unfair); all three tiers share the same answer set = a controlled comparison.
 
-指标（effect-grounded，与 WP2a 一致）：
-- 选择型(m1/b0/b3)：Sel-FullCov（chosen 真实效果并集 ⊇ required_effects 的比例）
-- 检索型(bm25/dense)：FullCov@1（top-1 真实效果覆盖）
+Metrics (effect-grounded, consistent with WP2a):
+- selection (m1/b0/b3): Sel-FullCov (fraction where the union of chosen true effects ⊇ required_effects)
+- retrieval (bm25/dense): FullCov@1 (top-1 true-effect coverage)
 
-用法（Windows, skill-router 环境）：
+Usage (Windows, skill-router environment):
   python eval/code/run_confusion_curve.py --methods m1 bm25 dense
-  python eval/code/run_confusion_curve.py --methods m1 bm25 dense b0 b3   # 含 LLM，慢
+  python eval/code/run_confusion_curve.py --methods m1 bm25 dense b0 b3   # includes LLM, slow
 """
 import os
 import sys
@@ -33,7 +34,7 @@ TIERS = ["low", "mid", "high"]
 
 
 def balanced_subsample(queries, n, seed=0):
-    """按 task_type 均衡抽 n 题（不足则全取），供 LLM 曲线控成本。"""
+    """Sample n queries balanced by task_type (take all if fewer), to cap LLM-curve cost."""
     import random
     if n is None or n <= 0 or n >= len(queries):
         return queries
@@ -52,7 +53,7 @@ def balanced_subsample(queries, n, seed=0):
 
 
 def load_answerable(subset_ids, queries, full_by_id):
-    """query 可答 = 子集内某金标准的真实效果签名 ⊇ required_effects。"""
+    """A query is answerable = some gold standard in the subset has true effect signature ⊇ required_effects."""
     subset_cards = [full_by_id[i] for i in subset_ids if i in full_by_id]
     ans = []
     for q in queries:
@@ -97,8 +98,9 @@ def build_method(name, pool):
 
 
 def eval_method(obj, kind, queries, by_id, mname=None, tier=None, cache=None, cache_path=None):
-    """LLM 选择型(b0/b3)带持久化缓存：每题成功的 chosen 落盘，
-    重跑时只对缓存缺失(即上次超时/失败)的题再调 API → 只补超时，不整跑。"""
+    """LLM selection methods (b0/b3) with a persistent cache: each query's successful chosen is written to disk,
+    so on a rerun only queries missing from the cache (i.e. previously timed out/failed) call the API again ->
+    only backfill timeouts, do not rerun everything."""
     hit = 0.0
     n = len(queries)
     wants_binding = getattr(obj, "wants_binding", False)
@@ -117,28 +119,28 @@ def eval_method(obj, kind, queries, by_id, mname=None, tier=None, cache=None, ca
             n_reused += 1
         else:
             chosen, ok = [], False
-            for attempt in range(5):  # LLM API 超时/连接错误重试
+            for attempt in range(5):  # retry on LLM API timeout/connection errors
                 try:
                     chosen = obj.select(q["instruction"], binding) if wants_binding else obj.select(q["instruction"])
                     ok = True
                     break
                 except Exception as ex:
-                    print(f"    [warn] select 重试{attempt+1}/5: {ex}", flush=True)
+                    print(f"    [warn] select retry {attempt+1}/5: {ex}", flush=True)
                     time.sleep(3 * (attempt + 1))
             if ok:
                 n_called += 1
                 if use_cache:
                     cache[ck] = chosen
-                    if n_called % 10 == 0 and cache_path:  # 增量落盘，防中断丢进度
+                    if n_called % 10 == 0 and cache_path:  # incremental flush to disk, avoid losing progress on interruption
                         json.dump(cache, open(cache_path, "w", encoding="utf-8"), ensure_ascii=False)
             else:
                 n_failed += 1
-                print("    [warn] select 5 次仍失败，该题不缓存(下次重跑会补)", flush=True)
+                print("    [warn] select still failing after 5 tries; this query is not cached (will be retried next run)", flush=True)
         hit += M.selection_scores(chosen, req, by_id, binding)["sel_fullcov"]
     if use_cache and cache_path:
         json.dump(cache, open(cache_path, "w", encoding="utf-8"), ensure_ascii=False)
     if kind == "sel" and (n_reused or n_failed):
-        print(f"    [cache] 复用 {n_reused} / 新调 {n_called} / 仍失败 {n_failed}", flush=True)
+        print(f"    [cache] reused {n_reused} / new calls {n_called} / still failed {n_failed}", flush=True)
     return hit / max(1, n)
 
 
@@ -147,25 +149,25 @@ def main():
     ap.add_argument("--methods", nargs="+", default=["m1", "bm25", "dense"],
                     choices=["m1", "bm25", "dense", "b0", "b3", "b4", "m1h", "m1h4"])
     ap.add_argument("--merge", action="store_true",
-                    help="载入已有 out 的 results，只重算本次 methods 并合并（保留其它方法曲线）")
+                    help="load results from an existing out file, recompute only this run's methods and merge (keep other methods' curves)")
     ap.add_argument("--gt", default=os.path.join(GT_DATA, "gt_kitchen_eval.jsonl"))
     ap.add_argument("--out", default=os.path.join(EVAL_DATA, "confusion_curve.json"))
-    ap.add_argument("--subsample", type=int, default=0, help=">0 时按 task_type 均衡抽样控 LLM 成本")
+    ap.add_argument("--subsample", type=int, default=0, help="if >0, subsample balanced by task_type to cap LLM cost")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--cache", default=os.path.join(EVAL_DATA, "confusion_llm_cache.json"),
-                    help="b0/b3 每题选择结果缓存；重跑只补缓存缺失(超时)的题")
+                    help="per-query selection cache for b0/b3; a rerun only backfills queries missing from the cache (timed out)")
     args = ap.parse_args()
 
     cache = {}
     if os.path.exists(args.cache):
         cache = json.load(open(args.cache, encoding="utf-8"))
-        print(f"[cache] 载入 {len(cache)} 条已缓存 LLM 选择结果")
+        print(f"[cache] loaded {len(cache)} cached LLM selection results")
 
     manifest = json.load(open(os.path.join(SKILLS_DATA, "tiers_manifest.json"), encoding="utf-8"))
     subset_ids = manifest["subset_base_ids"]
     queries = common.load_queries(n=None, seed=0, gt_path=args.gt)
 
-    # 用全池 by_id 判定"可答子集"（金标准卡与 tier 内一致）
+    # Use the full-pool by_id to determine the "answerable subset" (gold-standard cards match those inside each tier)
     os.environ.pop("POOL_FILE", None)
     full_pool = common.load_pool()
     full_by_id = {c["skill_id"]: c for c in full_pool}
@@ -173,8 +175,8 @@ def main():
     n_ans_full = len(answerable)
     if args.subsample and args.subsample > 0:
         answerable = balanced_subsample(answerable, args.subsample, args.seed)
-    print(f"子集基准 {len(subset_ids)} 个；eval 全量 {len(queries)} 题；"
-          f"可答子集 {n_ans_full} 题 → 实际评测 {len(answerable)} 题（三档共用）\n")
+    print(f"subset baselines {len(subset_ids)}; full eval {len(queries)} queries; "
+          f"answerable subset {n_ans_full} queries -> actually evaluated {len(answerable)} queries (shared across three tiers)\n")
 
     results = {m: {} for m in args.methods}
     prev = {}
@@ -185,7 +187,7 @@ def main():
         pool = common.load_pool()
         by_id = {c["skill_id"]: c for c in pool}
         ndist = sum(1 for c in pool if c.get("is_distractor"))
-        print(f"==== tier {tier}：池 {len(pool)} 条（干扰 {ndist}）====")
+        print(f"==== tier {tier}: pool {len(pool)} entries (distractors {ndist}) ====")
         for m in args.methods:
             t = time.time()
             obj, kind = build_method(m, pool)
@@ -195,13 +197,13 @@ def main():
             print(f"  {m:5} ({kind}) FullCov = {score:.3f}   ({time.time()-t:.1f}s)")
         print()
 
-    # 合并历史方法（--merge 保留其它方法曲线）
+    # Merge historical methods (--merge keeps other methods' curves)
     merged = dict(prev)
     merged.update(results)
 
-    # 汇总表
-    print("======== 混淆度曲线（FullCov，effect-grounded） ========")
-    print(f"{'method':6} {'low(1)':>8} {'mid(3)':>8} {'high(6)':>8} {'掉幅':>8}")
+    # Summary table
+    print("======== confusion-density curve (FullCov, effect-grounded) ========")
+    print(f"{'method':6} {'low(1)':>8} {'mid(3)':>8} {'high(6)':>8} {'drop':>8}")
     for m in merged:
         r = merged[m]
         if not all(t in r for t in TIERS):
@@ -215,7 +217,7 @@ def main():
                    "methods": sorted(merged), "subset_bases": len(subset_ids),
                    "tiers": {t: manifest["pools"][t] for t in TIERS},
                    "results": merged}, f, ensure_ascii=False, indent=2)
-    print(f"\n已写 {args.out}")
+    print(f"\nwrote {args.out}")
 
 
 if __name__ == "__main__":
