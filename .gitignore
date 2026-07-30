@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Secrets / local config (never commit API keys)
+.env
+embodied_skill/.env
+*.key
+
+# Trained weights (regenerate via the training scripts; see README)
+embodied_skill/router/models/*.pt
+
+# Large local caches / downloads
+embodied_skill/router/models/bge-*/
+*.7z
+*.zip
+
+# OS / editor
+.DS_Store
+.vscode/

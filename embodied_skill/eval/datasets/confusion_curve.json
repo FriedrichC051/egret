@@ -1,0 +1,97 @@
+{
+  "n_answerable": 68,
+  "n_answerable_full": 211,
+  "subsample": 74,
+  "seed": 0,
+  "methods": [
+    "b0",
+    "b3",
+    "b4",
+    "bm25",
+    "dense",
+    "m1",
+    "m1h",
+    "m1h4"
+  ],
+  "subset_bases": 34,
+  "tiers": {
+    "low": {
+      "k_per_base": 1,
+      "n_distractors": 34,
+      "n_gold": 34,
+      "pool_clean_size": 68,
+      "total_routing_pool": 81,
+      "variant_type_breakdown": {
+        "reorder": 12,
+        "lookalike": 8,
+        "missing": 14
+      }
+    },
+    "mid": {
+      "k_per_base": 3,
+      "n_distractors": 102,
+      "n_gold": 34,
+      "pool_clean_size": 136,
+      "total_routing_pool": 149,
+      "variant_type_breakdown": {
+        "missing": 34,
+        "lookalike": 34,
+        "reorder": 34
+      }
+    },
+    "high": {
+      "k_per_base": 6,
+      "n_distractors": 204,
+      "n_gold": 34,
+      "pool_clean_size": 238,
+      "total_routing_pool": 251,
+      "variant_type_breakdown": {
+        "lookalike": 68,
+        "reorder": 67,
+        "missing": 69
+      }
+    }
+  },
+  "results": {
+    "m1": {
+      "low": 0.9005,
+      "mid": 0.9005,
+      "high": 0.9005
+    },
+    "bm25": {
+      "low": 0.0995,
+      "mid": 0.1659,
+      "high": 0.1327
+    },
+    "dense": {
+      "low": 0.4787,
+      "mid": 0.4455,
+      "high": 0.4408
+    },
+    "m1h": {
+      "low": 0.9242,
+      "mid": 0.9242,
+      "high": 0.9242
+    },
+    "m1h4": {
+      "low": 0.9242,
+      "mid": 0.9242,
+      "high": 0.9242
+    },
+    "b0": {
+      "low": 0.8676,
+      "mid": 0.8529,
+      "high": 0.8382
+    },
+    "b3": {
+      "low": 0.8676,
+      "mid": 0.75,
+      "high": 0.75
+    },
+    "b4": {
+      "low": 0.3235,
+      "mid": 0.3235,
+      "high": 0.3824
+    }
+  }
+}

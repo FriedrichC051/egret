@@ -1,0 +1,87 @@
+{
+  "seed": 0,
+  "tiers": [
+    1,
+    3,
+    6
+  ],
+  "kmax": 6,
+  "n_gold_total": 125,
+  "n_variant_total": 373,
+  "subset_base_ids": [
+    "clean_then_empty_then_place",
+    "clean_then_place",
+    "clean_then_store_in_fridge",
+    "cool_then_discard_in_garbage",
+    "cool_then_empty_then_place",
+    "cool_then_heat_then_place",
+    "empty_and_clean_then_place",
+    "empty_and_cool_then_place",
+    "empty_then_clean_then_place",
+    "empty_then_heat_then_place",
+    "fill_and_cool_then_place",
+    "fill_and_heat_then_place",
+    "heat_then_cool_then_place",
+    "heat_then_discard_in_garbage",
+    "heat_then_empty_then_cool_then_place",
+    "heat_then_empty_then_place",
+    "open_receptacle_store_then_close",
+    "pick_and_place",
+    "pickup_knife_slice_then_discard_in_garbage",
+    "pickup_knife_slice_then_place",
+    "retrieve_from_cabinet_and_clean_then_heat_then_place",
+    "retrieve_from_cabinet_and_clean_then_place",
+    "retrieve_from_cabinet_and_clean_then_store_in_fridge",
+    "retrieve_from_cabinet_and_cool_then_place",
+    "retrieve_from_cabinet_and_slice_then_place",
+    "retrieve_from_fridge_and_heat_then_place",
+    "retrieve_from_fridge_and_place",
+    "retrieve_from_microwave_and_clean_then_place",
+    "slice_then_clean_then_place",
+    "slice_then_cool_then_place",
+    "slice_then_heat_then_place",
+    "store_in_cabinet",
+    "store_in_fridge",
+    "store_in_microwave"
+  ],
+  "n_subset_bases": 34,
+  "atomic": 13,
+  "pools": {
+    "low": {
+      "k_per_base": 1,
+      "n_distractors": 34,
+      "n_gold": 34,
+      "pool_clean_size": 68,
+      "total_routing_pool": 81,
+      "variant_type_breakdown": {
+        "reorder": 12,
+        "lookalike": 8,
+        "missing": 14
+      }
+    },
+    "mid": {
+      "k_per_base": 3,
+      "n_distractors": 102,
+      "n_gold": 34,
+      "pool_clean_size": 136,
+      "total_routing_pool": 149,
+      "variant_type_breakdown": {
+        "missing": 34,
+        "lookalike": 34,
+        "reorder": 34
+      }
+    },
+    "high": {
+      "k_per_base": 6,
+      "n_distractors": 204,
+      "n_gold": 34,
+      "pool_clean_size": 238,
+      "total_routing_pool": 251,
+      "variant_type_breakdown": {
+        "lookalike": 68,
+        "reorder": 67,
+        "missing": 69
+      }
+    }
+  }
+}

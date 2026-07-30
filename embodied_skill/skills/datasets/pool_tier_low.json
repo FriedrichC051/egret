@@ -1,0 +1,5257 @@
+[
+  {
+    "skill_id": "clean_then_empty_then_place",
+    "name": "Clean object, empty liquid, then place into receptacle",
+    "description": "Wash the object, pour out the liquid inside, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid",
+      "obj.cleanable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "clean_then_place",
+    "name": "Clean object in sink then place into receptacle",
+    "description": "Pick up the object, wash it in the sink, then place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": true,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "clean_then_store_in_fridge",
+    "name": "Clean object then store it in the fridge",
+    "description": "Wash the object, open the fridge, put it inside, and close the fridge door.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.cleanable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(Fridge)",
+      "not Fridge.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "cool_then_discard_in_garbage",
+    "name": "Cool object then discard in garbage",
+    "description": "拿起物品放入冰箱冷却后再丢进垃圾桶。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "GarbageCan"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "GarbageCan"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isCold",
+      "obj.at(GarbageCan)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "cool_then_empty_then_place",
+    "name": "Cool object, empty liquid, then place into receptacle",
+    "description": "Cool the object in the fridge, pour out the liquid, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid",
+      "obj.coolable"
+    ],
+    "effects": [
+      "obj.isCold",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "cool_then_heat_then_place",
+    "name": "Cool then heat then place",
+    "description": "Pick up the object, first cool it in the fridge, then heat it in the microwave, and finally place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "empty_and_clean_then_place",
+    "name": "Empty liquid then clean object then place into receptacle",
+    "description": "Empty the liquid from the container, wash it clean, then place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid",
+      "obj.isClean",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "empty_and_cool_then_place",
+    "name": "Empty liquid, cool object, then place",
+    "description": "Pick up the liquid-filled object, empty it, cool it in the fridge, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid",
+      "obj.isCold",
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "empty_then_clean_then_place",
+    "name": "Empty liquid, clean then place",
+    "description": "将物体拿起，在 sink 处倒空液体并清洗干净，最后放入目标容器。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid",
+      "obj.isClean",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "empty_then_heat_then_place",
+    "name": "倒空液体后加热并放置",
+    "description": "Pick up the liquid-filled container, empty it, heat it in the microwave, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid",
+      "obj.isHot",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "fill_and_cool_then_place",
+    "name": "Fill with water, cool object, then place",
+    "description": "Pick up a liquid-holding container, fill it with water, cool it in the fridge, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Faucet"
+        ]
+      },
+      {
+        "skill": "fill_with_liquid",
+        "args": [
+          "obj",
+          "Water"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.canFillLiquid"
+    ],
+    "effects": [
+      "obj.isFilledWithLiquid",
+      "obj.isCold",
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "fill_and_heat_then_place",
+    "name": "Fill container with liquid then heat and place",
+    "description": "Fill the container with water, heat it in the microwave, then place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Faucet"
+        ]
+      },
+      {
+        "skill": "fill_with_liquid",
+        "args": [
+          "obj",
+          "Water"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.canFillLiquid"
+    ],
+    "effects": [
+      "obj.isFilledWithLiquid",
+      "obj.isHot",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "heat_then_cool_then_place",
+    "name": "Heat then cool then place",
+    "description": "Pick up the object, first heat it in the microwave, then cool it in the fridge, and finally place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "heat_then_discard_in_garbage",
+    "name": "Heat object then discard in garbage",
+    "description": "拿起物品用微波炉加热后丢进垃圾桶。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "GarbageCan"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "GarbageCan"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.at(GarbageCan)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "heat_then_empty_then_cool_then_place",
+    "name": "Heat, empty, cool then place object",
+    "description": "将容器加热、倒空、冷藏后再放入目标容器。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid",
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "heat_then_empty_then_place",
+    "name": "加热后倒空液体并放置",
+    "description": "Pick up the liquid-filled container, heat it in the microwave, empty it, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "obj.isHot",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "open_receptacle_store_then_close",
+    "name": "Open receptacle, store object, then close it",
+    "description": "打开目标容器，将物品放入后再将其关闭。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "receptacle.openable"
+    ],
+    "effects": [
+      "obj.at(receptacle)",
+      "not receptacle.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "pick_and_place",
+    "name": "Pick up object and place into receptacle",
+    "description": "Go to the object, pick it up, then go to the target container and place it inside.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": true,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "pickup_knife_slice_then_discard_in_garbage",
+    "name": "Pick up knife, slice object, then discard in garbage",
+    "description": "拿起刀将物品切片，随后把切片丢进垃圾桶。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "GarbageCan"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "GarbageCan"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.cuttable",
+      "Knife.pickupable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.at(GarbageCan)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "pickup_knife_slice_then_place",
+    "name": "Pick up knife, slice object, then place object into receptacle",
+    "description": "Pick up the knife, slice the object, put the knife back, and place the sliced object in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.slicable",
+      "Knife.pickupable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.at(receptacle)",
+      "Knife.at(CounterTop)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_clean_then_heat_then_place",
+    "name": "Retrieve object from cabinet, clean, heat, then place",
+    "description": "从橱柜取出物品，清洗后用微波炉加热，再放入目标容器。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.isHot",
+      "obj.at(receptacle)",
+      "not Cabinet.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_clean_then_place",
+    "name": "从橱柜取出物体清洗后放置",
+    "description": "Open the cabinet, take out the object, close the cabinet door, wash it in the sink, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.at(Cabinet)"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_clean_then_store_in_fridge",
+    "name": "Retrieve from cabinet, clean, then store in fridge",
+    "description": "从橱柜中取出物体，清洗后放入冰箱储存。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(Fridge)",
+      "not Cabinet.isOpen",
+      "not Fridge.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_cool_then_place",
+    "name": "Retrieve from cabinet, cool, then place",
+    "description": "Take the object out of the cabinet, cool it in the fridge, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.in(Cabinet)"
+    ],
+    "effects": [
+      "obj.isCold",
+      "obj.at(receptacle)",
+      "not Cabinet.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_slice_then_place",
+    "name": "Retrieve from cabinet, slice, then place",
+    "description": "从橱柜中取出可切物体，先用刀切片，再将其放入目标容器。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.in(Cabinet)",
+      "obj.pickupable",
+      "obj.cuttable",
+      "Knife.at(CounterTop)"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.at(receptacle)",
+      "Knife.at(CounterTop)",
+      "not Cabinet.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_fridge_and_heat_then_place",
+    "name": "Retrieve from fridge, heat, then place",
+    "description": "Take the object out of the fridge, heat it in the microwave, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.in(Fridge)"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.at(receptacle)",
+      "not Fridge.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_fridge_and_place",
+    "name": "Retrieve object from fridge then place into receptacle",
+    "description": "Open the fridge, take out the target object, close the fridge door, then place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "Fridge.openable"
+    ],
+    "effects": [
+      "obj.at(receptacle)",
+      "not Fridge.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "retrieve_from_microwave_and_clean_then_place",
+    "name": "Retrieve from microwave, clean, then place",
+    "description": "Take the object out of the microwave, wash it in the sink, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.in(Microwave)"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(receptacle)",
+      "not Microwave.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "slice_then_clean_then_place",
+    "name": "Slice object then clean and place",
+    "description": "First slice the object, then wash it, then place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.cuttable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.isClean",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "slice_then_cool_then_place",
+    "name": "Slice object then cool and place",
+    "description": "First slice the object, then chill it in the fridge, then place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.cuttable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "slice_then_heat_then_place",
+    "name": "Slice object then heat in microwave then place into receptacle",
+    "description": "Slice the target object, heat the slices in the microwave, then place them into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.sliceable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.isHot",
+      "obj.at(receptacle)",
+      "Knife.at(CounterTop)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "store_in_cabinet",
+    "name": "Pick up object and store inside cabinet",
+    "description": "Pick up the target object, place it in the cabinet, then close the cabinet door.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "Cabinet.openable"
+    ],
+    "effects": [
+      "obj.at(Cabinet)",
+      "not Cabinet.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "store_in_fridge",
+    "name": "Pick up object and store inside fridge",
+    "description": "Pick up the object, open the fridge, place it inside, and close the fridge door.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "Fridge.openable"
+    ],
+    "effects": [
+      "obj.at(Fridge)",
+      "not Fridge.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "store_in_microwave",
+    "name": "Pick up object and store it in the microwave",
+    "description": "Pick up the object, put it in the microwave, and close the microwave door.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.at(Microwave)",
+      "not Microwave.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite"
+  },
+  {
+    "skill_id": "clean_then_empty_then_place__reorder_empty_before_clean",
+    "name": "Empty liquid from object, clean object, then place into receptacle",
+    "description": "Pick up the object, empty its liquid at the sink, then wash it, and finally place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid",
+      "obj.cleanable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "clean_then_empty_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "Empties the liquid before cleaning, violating the specified clean-then-empty order."
+  },
+  {
+    "skill_id": "clean_then_place__lookalike_countertop_wash",
+    "name": "Clean object on countertop then place into receptacle",
+    "description": "Pick up the object, wash it on the countertop, then place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.at(receptacle)"
+    ],
+    "is_executable": false,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "clean_then_place",
+    "variant_type": "lookalike",
+    "why_wrong": "Washing must be done at the sink, not on the countertop; the clean action is applied at the wrong location."
+  },
+  {
+    "skill_id": "clean_then_store_in_fridge_lookalike",
+    "name": "Cool object then store it in the fridge",
+    "description": "Cool the object in the fridge, open the fridge, put it inside, and close the fridge door.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.cleanable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(Fridge)",
+      "not Fridge.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "clean_then_store_in_fridge",
+    "variant_type": "lookalike",
+    "why_wrong": "把清洗动作错误地替换为冷藏，物体不会被清洗，无法满足 isClean 效果。"
+  },
+  {
+    "skill_id": "cool_then_discard_in_garbage_missing",
+    "name": "Cool object then discard in garbage (missing cool)",
+    "description": "拿起物品直接丢进垃圾桶，省略冷却步骤。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "GarbageCan"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "GarbageCan"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.at(GarbageCan)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "cool_then_discard_in_garbage",
+    "variant_type": "missing",
+    "why_wrong": "缺少 cool_object_fridge 步骤，物品没有被冷却。"
+  },
+  {
+    "skill_id": "cool_then_empty_then_place__reorder_empty_before_cool",
+    "name": "Empty liquid from object, cool object, then place into receptacle",
+    "description": "Pick up the object, empty its liquid at the sink, then cool it in the fridge, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid",
+      "obj.coolable"
+    ],
+    "effects": [
+      "obj.isCold",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "cool_then_empty_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "Empties the liquid before cooling, violating the specified cool-then-empty order."
+  },
+  {
+    "skill_id": "cool_then_heat_then_place_distractor_reorder",
+    "name": "Cool then heat then place",
+    "description": "Pick up the object, first cool it in the fridge, then heat it in the microwave, and finally place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "cool_then_heat_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "Reverses the required cool-then-heat order, so the object ends cold instead of hot."
+  },
+  {
+    "skill_id": "empty_and_clean_then_place__reorder",
+    "name": "Clean object then empty liquid then place into receptacle",
+    "description": "Wash the target object, then pour out the liquid, and finally place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "empty_and_clean_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "The washing step should occur after emptying the liquid; washing before pouring violates the standard order and semantics of 'empty and wash'."
+  },
+  {
+    "skill_id": "empty_and_cool_then_place__reorder_put_before_cool",
+    "name": "倒空并放置后再冷却（错序）",
+    "description": "Pick up the liquid-filled object, empty it, place it in the target receptacle, and then attempt to cool it.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "is_executable": false,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "empty_and_cool_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "先 put_object 再 cool_object_fridge，此时手中已无物体，无法令目标物体变冷，最终不是 isCold。"
+  },
+  {
+    "skill_id": "empty_then_clean_then_place__missing_empty",
+    "name": "Empty liquid, clean then place (missing empty)",
+    "description": "将物体清洗后直接放入目标容器，未倒空液体。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.isFilledWithLiquid",
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "empty_then_clean_then_place",
+    "variant_type": "missing",
+    "why_wrong": "缺少 empty_liquid，容器中仍装有液体。"
+  },
+  {
+    "skill_id": "empty_then_heat_then_place_reorder",
+    "name": "加热后倒空液体并放置",
+    "description": "Pick up the liquid-filled container, heat it in the microwave, empty it, and place it in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "empty_liquid",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "obj.isHot",
+      "not obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "empty_then_heat_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "加热与倒空顺序颠倒，原任务要求先倒空再加热，顺序错误导致语义不符。"
+  },
+  {
+    "skill_id": "fill_and_cool_then_place__missing",
+    "name": "Fill with water, then place (missing cooling)",
+    "description": "Pick up a liquid-holding container, fill it with water, and place it in the target container without cooling.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Faucet"
+        ]
+      },
+      {
+        "skill": "fill_with_liquid",
+        "args": [
+          "obj",
+          "Water"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.canFillLiquid"
+    ],
+    "effects": [
+      "obj.isFilledWithLiquid",
+      "obj.isCold",
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "fill_and_cool_then_place",
+    "variant_type": "missing",
+    "why_wrong": "Omits the cool_object_fridge step, so the filled container is not cold when placed."
+  },
+  {
+    "skill_id": "fill_and_heat_then_place__lookalike_cool",
+    "name": "Fill container with liquid then cool and place",
+    "description": "Fill the container with water, chill it in the fridge, then place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Faucet"
+        ]
+      },
+      {
+        "skill": "fill_with_liquid",
+        "args": [
+          "obj",
+          "Water"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.canFillLiquid"
+    ],
+    "effects": [
+      "obj.isFilledWithLiquid",
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "fill_and_heat_then_place",
+    "variant_type": "lookalike",
+    "why_wrong": "Chills the filled container instead of microwaving it, so the liquid is cold rather than hot."
+  },
+  {
+    "skill_id": "heat_then_cool_then_place_lookalike",
+    "name": "Heat then cool then place",
+    "description": "Pick up the object, first heat it in the microwave, then cool it in the fridge, and finally place it into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "heat_then_cool_then_place",
+    "variant_type": "lookalike",
+    "why_wrong": "Replaces refrigeration with a second microwave-heating step; although both are temperature-control actions, the object is still not semantically cooled."
+  },
+  {
+    "skill_id": "discard_then_heat",
+    "name": "Discard in garbage then heat object",
+    "description": "先将物品丢进垃圾桶，再用微波炉加热。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "GarbageCan"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "GarbageCan"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.at(GarbageCan)"
+    ],
+    "is_executable": false,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "heat_then_discard_in_garbage",
+    "variant_type": "reorder",
+    "why_wrong": "加热需要手持物品，丢入垃圾桶后无法对其加热。"
+  },
+  {
+    "skill_id": "heat_cool_then_place_missing_empty",
+    "name": "Heat then cool then place object",
+    "description": "将容器加热、冷藏后再放入目标容器（缺少倒空步骤）。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "cool_object_fridge",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "obj.isFilledWithLiquid",
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "heat_then_empty_then_cool_then_place",
+    "variant_type": "missing",
+    "why_wrong": "缺少倒空液体步骤，物品最终仍装有液体，不满足原任务要求。"
+  },
+  {
+    "skill_id": "heat_then_empty_then_place__missing_empty",
+    "name": "加热后放置（缺倒空）",
+    "description": "Pick up the liquid-filled container, first heat it in the microwave, then place it directly into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.isFilledWithLiquid",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "heat_then_empty_then_place",
+    "variant_type": "missing",
+    "why_wrong": "Missing the empty-liquid step; the object still contains liquid, failing the original task effect not obj.isFilledWithLiquid."
+  },
+  {
+    "skill_id": "open_close_then_store",
+    "name": "Open receptacle, close it, then store object",
+    "description": "打开目标容器，先关闭再放入物品。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "receptacle.openable"
+    ],
+    "effects": [
+      "not receptacle.isOpen"
+    ],
+    "is_executable": false,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "open_receptacle_store_then_close",
+    "variant_type": "reorder",
+    "why_wrong": "在放置物品之前先关闭容器，物品无法放入 receptacle 内。"
+  },
+  {
+    "skill_id": "pick_and_place_missing_pickup",
+    "name": "Pick up object and place into receptacle",
+    "description": "Go to the object, pick it up, then go to the target container and place it inside.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [],
+    "is_executable": false,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "pick_and_place",
+    "variant_type": "missing",
+    "why_wrong": "Missing the pickup_object step; the agent has no object in hand, so placement cannot be completed."
+  },
+  {
+    "skill_id": "pickup_knife_slice_then_discard_in_sink",
+    "name": "Pick up knife, slice object, then discard in sink",
+    "description": "拿起刀将物品切片，随后把切片丢进水槽。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "SinkBasin"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.cuttable",
+      "Knife.pickupable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.at(SinkBasin)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "pickup_knife_slice_then_discard_in_garbage",
+    "variant_type": "lookalike",
+    "why_wrong": "原任务要求把切片丢进垃圾桶，此变体却错误地放入水槽。"
+  },
+  {
+    "skill_id": "pickup_knife_slice_then_place_lookalike",
+    "name": "Pick up knife, clean object, then place object into receptacle",
+    "description": "Pick up the knife, wash the object at the sink, put the knife back, and place the object in the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.slicable",
+      "Knife.pickupable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.at(receptacle)",
+      "Knife.at(CounterTop)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "pickup_knife_slice_then_place",
+    "variant_type": "lookalike",
+    "why_wrong": "把切片动作错误地替换为清洗，物体不会被切片，未满足原任务语义。"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_clean_then_heat_then_place_missing",
+    "name": "Retrieve object from cabinet, clean, heat, then place (missing clean)",
+    "description": "从橱柜取出物品后直接加热并放入目标容器，省略清洗步骤。",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "heat_object_microwave",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.at(receptacle)",
+      "not Cabinet.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_cabinet_and_clean_then_heat_then_place",
+    "variant_type": "missing",
+    "why_wrong": "缺少 clean_object_sink 步骤，物品未被清洗，不满足 isClean 要求。"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_clean_then_place__missing_clean",
+    "name": "从橱柜取出物体后放置",
+    "description": "Open the cabinet, take out the object, close the cabinet door, go to the sink but do not wash, then place it directly into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.at(Cabinet)"
+    ],
+    "effects": [
+      "not obj.isClean",
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_cabinet_and_clean_then_place",
+    "variant_type": "missing",
+    "why_wrong": "Missing the clean_object_sink step; the object is not washed, failing obj.isClean."
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_clean_then_store_in_fridge__lookalike_store_in_cabinet",
+    "name": "Retrieve from cabinet, clean, then store in cabinet",
+    "description": "从橱柜中取出物体，清洗后放回橱柜储存。",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.at(Cabinet)",
+      "not Cabinet.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_cabinet_and_clean_then_store_in_fridge",
+    "variant_type": "lookalike",
+    "why_wrong": "将目标储存容器从冰箱错误替换为橱柜，最终物体并未被放入冰箱。"
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_cool_then_place__missing_cool",
+    "name": "Retrieve from cabinet, then place (missing cool)",
+    "description": "Take the object out of the cabinet and place it directly into the target container, omitting cooling.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.in(Cabinet)"
+    ],
+    "effects": [
+      "obj.at(receptacle)",
+      "not Cabinet.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_cabinet_and_cool_then_place",
+    "variant_type": "missing",
+    "why_wrong": "Missing the necessary step of cooling in the fridge; the final object is not cold."
+  },
+  {
+    "skill_id": "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet",
+    "name": "Retrieve from cabinet, slice, then place",
+    "description": "Open the cabinet, take out the object, slice it, and place it in the target receptacle.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.in(Cabinet)",
+      "obj.pickupable",
+      "obj.cuttable",
+      "Knife.at(CounterTop)"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.at(receptacle)",
+      "Knife.at(CounterTop)",
+      "Cabinet.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_cabinet_and_slice_then_place",
+    "variant_type": "missing",
+    "why_wrong": "未执行关闭橱柜步骤，最终橱柜门仍打开，不满足 not Cabinet.isOpen。"
+  },
+  {
+    "skill_id": "retrieve_from_fridge_and_heat_then_place__missing",
+    "name": "Retrieve from fridge, then place (missing heating)",
+    "description": "Take the object out of the fridge and place it in the target container without heating.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.in(Fridge)"
+    ],
+    "effects": [
+      "obj.isHot",
+      "obj.at(receptacle)",
+      "not Fridge.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_fridge_and_heat_then_place",
+    "variant_type": "missing",
+    "why_wrong": "Omits the heat_object_microwave step, so the object stays cold."
+  },
+  {
+    "skill_id": "retrieve_from_fridge_and_place__missing_close",
+    "name": "Retrieve object from fridge then place into receptacle",
+    "description": "Open the fridge, take out the target object, then place it into the target container without closing the fridge.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "Fridge.openable"
+    ],
+    "effects": [
+      "obj.at(receptacle)",
+      "Fridge.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_fridge_and_place",
+    "variant_type": "missing",
+    "why_wrong": "The close_receptacle step for the fridge is omitted, so the fridge stays open after retrieval."
+  },
+  {
+    "skill_id": "retrieve_from_microwave_and_clean_then_place__reorder",
+    "name": "Retrieve from microwave, place, then clean",
+    "description": "Take the object out of the microwave, place it in the target container, and then attempt to wash it.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.in(Microwave)"
+    ],
+    "effects": [
+      "obj.at(receptacle)",
+      "not Microwave.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": false,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "retrieve_from_microwave_and_clean_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "清洗被放在放置之后，对象已不在水槽中，无法被洗干净。"
+  },
+  {
+    "skill_id": "slice_then_clean_then_place__reorder_clean_first",
+    "name": "Slice object then clean and place (clean-first reorder)",
+    "description": "Slice the object first, then wash it, and finally place it into the target container. (Variant: wash before slicing)",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.cuttable"
+    ],
+    "effects": [
+      "obj.isClean",
+      "obj.isSliced",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "slice_then_clean_then_place",
+    "variant_type": "reorder",
+    "why_wrong": "The original skill requires slicing before washing; this variant washes before slicing, reversing the order and semantically inequivalent."
+  },
+  {
+    "skill_id": "slice_then_cool_then_place__missing",
+    "name": "Slice object then place",
+    "description": "Slice the object first, then place it directly into the target container.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.cuttable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.isCold",
+      "obj.at(receptacle)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "slice_then_cool_then_place",
+    "variant_type": "missing",
+    "why_wrong": "Lacks the key step of refrigerating; the object will not be cooled."
+  },
+  {
+    "skill_id": "slice_then_heat_then_place__lookalike_clean",
+    "name": "Slice object then clean then place into receptacle",
+    "description": "Variant whose structure resembles the original, but it cleans the sliced object instead of heating it.",
+    "type": "composite",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "Knife"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "slice_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "Knife",
+          "CounterTop"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "SinkBasin"
+        ]
+      },
+      {
+        "skill": "clean_object_sink",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "receptacle"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "receptacle"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "obj.sliceable"
+    ],
+    "effects": [
+      "obj.isSliced",
+      "obj.isHot",
+      "obj.at(receptacle)",
+      "Knife.at(CounterTop)"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "slice_then_heat_then_place",
+    "variant_type": "lookalike",
+    "why_wrong": "It cleans the sliced object instead of heating it, so the object is not hot."
+  },
+  {
+    "skill_id": "store_in_cabinet_reorder_close_before_put",
+    "name": "Pick up object and store inside cabinet",
+    "description": "Pick up the target object, place it in the cabinet, then close the cabinet door.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Cabinet"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Cabinet"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "Cabinet.openable"
+    ],
+    "effects": [
+      "obj.at(Cabinet)",
+      "not Cabinet.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "store_in_cabinet",
+    "variant_type": "reorder",
+    "why_wrong": "Close the cabinet door before placing the object, causing put_object to fail to place the object inside the cabinet."
+  },
+  {
+    "skill_id": "store_in_fridge_reorder",
+    "name": "Pick up object and store inside fridge (reordered)",
+    "description": "Pick up the object, open the fridge, place it inside, close the fridge, then open the fridge again.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      },
+      {
+        "skill": "open_receptacle",
+        "args": [
+          "Fridge"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable",
+      "Fridge.openable"
+    ],
+    "effects": [
+      "obj.at(Fridge)",
+      "Fridge.isOpen",
+      "agent.hand_empty"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "store_in_fridge",
+    "variant_type": "reorder",
+    "why_wrong": "It reopens the fridge after placing the object, leaving the fridge open instead of closed."
+  },
+  {
+    "skill_id": "store_in_microwave_missing",
+    "name": "Pick up object and store it in the microwave (forget open)",
+    "description": "Pick up the object, go to the microwave, put it inside, and close the door, but skip opening the microwave.",
+    "type": "composite",
+    "params": [
+      "obj"
+    ],
+    "sub_skills": [
+      {
+        "skill": "goto_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "pickup_object",
+        "args": [
+          "obj"
+        ]
+      },
+      {
+        "skill": "goto_object",
+        "args": [
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "put_object",
+        "args": [
+          "obj",
+          "Microwave"
+        ]
+      },
+      {
+        "skill": "close_receptacle",
+        "args": [
+          "Microwave"
+        ]
+      }
+    ],
+    "preconditions": [
+      "agent.hand_empty",
+      "obj.pickupable"
+    ],
+    "effects": [
+      "obj.at(Microwave)",
+      "not Microwave.isOpen"
+    ],
+    "is_executable": true,
+    "gold": false,
+    "body": "composite_bodies.execute_composite",
+    "is_distractor": true,
+    "variant_of": "store_in_microwave",
+    "variant_type": "missing",
+    "why_wrong": "缺少 open_receptacle 步骤，微波炉门关闭时无法放入物体。"
+  }
+]

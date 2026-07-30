@@ -1,0 +1,315 @@
+[
+  {
+    "skill_id": "goto_object",
+    "name": "Go to object/location",
+    "description": "Navigate near the target object or container to bring it within interaction range.",
+    "type": "atomic",
+    "params": [
+      "target"
+    ],
+    "preconditions": [],
+    "effects": [
+      "agent.at(target)"
+    ],
+    "thor_actions": [
+      "GetInteractablePoses",
+      "Teleport"
+    ],
+    "source_subgoal": "GotoLocation",
+    "in_gt_core": true,
+    "is_executable": true,
+    "body": "atomic_bodies.goto_object"
+  },
+  {
+    "skill_id": "pickup_object",
+    "name": "Pick up object",
+    "description": "Pick up a graspable object in front, ending with the object held in hand.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.at(obj)",
+      "agent.hand_empty"
+    ],
+    "effects": [
+      "agent.holding(obj)",
+      "not agent.hand_empty"
+    ],
+    "thor_actions": [
+      "PickupObject"
+    ],
+    "source_subgoal": "PickupObject",
+    "in_gt_core": true,
+    "is_executable": true,
+    "body": "atomic_bodies.pickup_object"
+  },
+  {
+    "skill_id": "put_object",
+    "name": "Put object into/on receptacle",
+    "description": "Place the held object into or onto the target container or surface, leaving the hand empty.",
+    "type": "atomic",
+    "params": [
+      "obj",
+      "receptacle"
+    ],
+    "preconditions": [
+      "agent.holding(obj)",
+      "agent.at(receptacle)"
+    ],
+    "effects": [
+      "obj.at(receptacle)",
+      "agent.hand_empty"
+    ],
+    "thor_actions": [
+      "PutObject"
+    ],
+    "source_subgoal": "PutObject",
+    "in_gt_core": true,
+    "is_executable": true,
+    "body": "atomic_bodies.put_object"
+  },
+  {
+    "skill_id": "heat_object_microwave",
+    "name": "Heat object with microwave",
+    "description": "Heat the held object in the microwave (open→place→close→heat→remove), ending with the object hot.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.holding(obj)",
+      "agent.at(microwave)"
+    ],
+    "effects": [
+      "obj.isHot"
+    ],
+    "thor_actions": [
+      "OpenObject",
+      "PutObject",
+      "CloseObject",
+      "ToggleObjectOn",
+      "ToggleObjectOff",
+      "PickupObject"
+    ],
+    "source_subgoal": "HeatObject",
+    "in_gt_core": true,
+    "is_executable": true,
+    "body": "atomic_bodies.heat_object_microwave"
+  },
+  {
+    "skill_id": "slice_object",
+    "name": "Slice object with knife",
+    "description": "While holding a knife, slice the cuttable object in front.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.holding(knife)",
+      "agent.at(obj)",
+      "obj.sliceable"
+    ],
+    "effects": [
+      "obj.isSliced"
+    ],
+    "thor_actions": [
+      "SliceObject"
+    ],
+    "source_subgoal": "SliceObject",
+    "in_gt_core": true,
+    "is_executable": true,
+    "body": "atomic_bodies.slice_object"
+  },
+  {
+    "skill_id": "cool_object_fridge",
+    "name": "Cool object with fridge",
+    "description": "Cool the held object in the refrigerator (open→place→close→remove), ending with the object cold.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.holding(obj)",
+      "agent.at(fridge)"
+    ],
+    "effects": [
+      "obj.isCold"
+    ],
+    "thor_actions": [
+      "OpenObject",
+      "PutObject",
+      "CloseObject",
+      "PickupObject"
+    ],
+    "source_subgoal": "CoolObject",
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.cool_object_fridge"
+  },
+  {
+    "skill_id": "clean_object_sink",
+    "name": "Clean object in sink",
+    "description": "Wash the held object under the faucet in the sink (place in sink→turn on water→turn off→remove), ending with the object clean.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.holding(obj)",
+      "agent.at(sinkbasin)"
+    ],
+    "effects": [
+      "obj.isClean"
+    ],
+    "thor_actions": [
+      "PutObject",
+      "ToggleObjectOn",
+      "ToggleObjectOff",
+      "PickupObject"
+    ],
+    "source_subgoal": "CleanObject",
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.clean_object_sink"
+  },
+  {
+    "skill_id": "open_receptacle",
+    "name": "Open receptacle",
+    "description": "Open an openable container (fridge, microwave, cabinet, etc.).",
+    "type": "atomic",
+    "params": [
+      "receptacle"
+    ],
+    "preconditions": [
+      "agent.at(receptacle)",
+      "receptacle.openable"
+    ],
+    "effects": [
+      "receptacle.isOpen"
+    ],
+    "thor_actions": [
+      "OpenObject"
+    ],
+    "source_subgoal": null,
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.open_receptacle"
+  },
+  {
+    "skill_id": "close_receptacle",
+    "name": "Close receptacle",
+    "description": "Close an opened container.",
+    "type": "atomic",
+    "params": [
+      "receptacle"
+    ],
+    "preconditions": [
+      "agent.at(receptacle)",
+      "receptacle.isOpen"
+    ],
+    "effects": [
+      "not receptacle.isOpen"
+    ],
+    "thor_actions": [
+      "CloseObject"
+    ],
+    "source_subgoal": null,
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.close_receptacle"
+  },
+  {
+    "skill_id": "toggle_on",
+    "name": "Toggle object on",
+    "description": "Turn on or activate a toggleable object (faucet, stove, lamp, etc.).",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.at(obj)",
+      "obj.toggleable"
+    ],
+    "effects": [
+      "obj.isToggled"
+    ],
+    "thor_actions": [
+      "ToggleObjectOn"
+    ],
+    "source_subgoal": null,
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.toggle_on"
+  },
+  {
+    "skill_id": "toggle_off",
+    "name": "Toggle object off",
+    "description": "Turn off an activated toggleable object.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.at(obj)",
+      "obj.isToggled"
+    ],
+    "effects": [
+      "not obj.isToggled"
+    ],
+    "thor_actions": [
+      "ToggleObjectOff"
+    ],
+    "source_subgoal": null,
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.toggle_off"
+  },
+  {
+    "skill_id": "fill_with_liquid",
+    "name": "Fill container with liquid",
+    "description": "Fill the held liquid container with liquid (e.g., water).",
+    "type": "atomic",
+    "params": [
+      "obj",
+      "liquid"
+    ],
+    "preconditions": [
+      "agent.holding(obj)",
+      "obj.canFillWithLiquid"
+    ],
+    "effects": [
+      "obj.isFilledWithLiquid"
+    ],
+    "thor_actions": [
+      "FillObjectWithLiquid"
+    ],
+    "source_subgoal": null,
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.fill_with_liquid"
+  },
+  {
+    "skill_id": "empty_liquid",
+    "name": "Empty liquid from container",
+    "description": "Empty the liquid from the held container.",
+    "type": "atomic",
+    "params": [
+      "obj"
+    ],
+    "preconditions": [
+      "agent.holding(obj)",
+      "obj.isFilledWithLiquid"
+    ],
+    "effects": [
+      "not obj.isFilledWithLiquid"
+    ],
+    "thor_actions": [
+      "EmptyLiquidFromObject"
+    ],
+    "source_subgoal": null,
+    "in_gt_core": false,
+    "is_executable": true,
+    "body": "atomic_bodies.empty_liquid"
+  }
+]

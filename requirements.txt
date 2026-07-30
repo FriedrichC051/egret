@@ -1,0 +1,16 @@
+# ==============================================================
+# Routing / offline evaluation / training / plotting  (Windows or Linux, no simulator)
+# Tested with Python 3.10.  A single 8 GB GPU is sufficient; CPU also works
+# for the retrieval / BM25 / metrics paths (LoTa-Bench baseline needs a GPU).
+# ==============================================================
+
+numpy>=1.24
+torch>=2.1                 # L0/L4 heads, LoTa-Bench (B4) local causal LM
+transformers>=4.40         # B4 LoTa-Bench causal LM (Qwen2.5-3B)
+sentence-transformers>=2.6 # BGE dense retriever / reranker encoders
+rank-bm25>=0.2.2           # B1 BM25 sparse retriever
+matplotlib>=3.7            # confusion-density curve / ablation figures
+openai>=1.14               # LLM baselines (B0 / B3 rerank / LLM goal parser) via an OpenAI-compatible endpoint
+
+# Optional (only for regenerating ALFRED-derived tasks from the raw archive)
+py7zr>=0.20

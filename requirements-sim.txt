@@ -1,0 +1,9 @@
+# ==============================================================
+# Real-execution simulation in AI2-THOR  (Linux / WSL, needs a GPU + display)
+# Install these in the environment that runs the simulator, in addition to numpy.
+# See README "Simulation environment" for the GPU/OpenGL (d3d12) setup under WSLg.
+# ==============================================================
+
+ai2thor>=5.0
+numpy>=1.24
+py7zr>=0.20
