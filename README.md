@@ -290,5 +290,3 @@ while keeping a legal action chain, so adding more of them does not make a query
   (~28K parameters total): a multi-label Goal Parser head and a tie-breaking preference
   scorer. Everything else — legality filtering, effect recomputation, coverage selection, and
   coverage repair — is symbolic, and inference makes no LLM API calls.
-```
-
