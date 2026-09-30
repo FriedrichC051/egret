@@ -66,6 +66,26 @@ def skill_sig(card):
     return frozenset(goal_signature(card.get("effects", [])))
 
 
+def skill_struct_text(card, by_id):
+    """The card's **structural** text: symbolic preconditions + the ordered sub-skill
+    sequence expanded down to atomic skills.
+
+    Used for the information-matched baseline setting: a baseline sees the **same raw
+    structure** the router sees, rather than the recomputed effects (handing over the
+    recomputed effects would amount to giving away the answer). The expansion goes through
+    flatten_atomic, exactly as true_effect_sig does, so the information really is matched."""
+    pre = ", ".join(card.get("preconditions") or []) or "-"
+    steps = "; ".join(
+        f"{sid}({','.join(args or [])})" for sid, args in flatten_atomic(card, by_id)
+    ) or "-"
+    return f"preconditions: {pre}. steps: {steps}"
+
+
+def skill_doc_full(card, by_id):
+    """Retrieval document text, information-matched variant = skill_doc + structural text."""
+    return f"{skill_doc(card)} {skill_struct_text(card, by_id)}"
+
+
 # ---------- effect-grounded coverage (WP2a): recompute true effects from sub_skills ----------
 # A distractor's declared effects may lie (lookalike writes heat as cool; missing drops a
 # step but still lists everything). Correctness must be based on the "state changes actually

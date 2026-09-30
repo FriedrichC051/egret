@@ -103,11 +103,22 @@ def main():
     ap.add_argument("--limit", type=int, default=0, help="run only the first N queries (0=all)")
     ap.add_argument("--merge", action="store_true",
                     help="only recompute this run's conds and merge into existing sim_results (keep other methods' results)")
+    ap.add_argument("--task-types", nargs="+", default=None,
+                    help="restrict to these ALFRED task types")
+    # AI2-THOR's success rate decays with position in a long run (independent of load), so the
+    # controller is rebuilt periodically. Without this, adjudication drifts across a 211-query run.
+    ap.add_argument("--restart-every", type=int, default=25,
+                    help="rebuild the THOR controller every N queries (0 = never)")
+    ap.add_argument("--resume", action="store_true",
+                    help="skip queries already complete for every condition of this run, in the out file")
     ap.add_argument("--out", default=os.path.join(EVAL_DATA, "sim_results.json"))
     args = ap.parse_args()
 
     data = json.load(open(args.selections, encoding="utf-8"))
     queries = data["queries"]
+    if args.task_types:
+        keep = set(args.task_types)
+        queries = [q for q in queries if q.get("task_type") in keep]
     if args.limit > 0:
         queries = queries[:args.limit]
 
@@ -117,7 +128,7 @@ def main():
     exec_gold_index = build_exec_gold_index(pool)
 
     prev_res = {}
-    if args.merge and os.path.exists(args.out):
+    if (args.merge or args.resume) and os.path.exists(args.out):
         for r in json.load(open(args.out, encoding="utf-8")).get("per_query", []):
             prev_res[r["task_id"]] = r.get("res", {})
 
@@ -139,8 +150,23 @@ def main():
 
     run_conds = list(dict.fromkeys(list(methods) + (["gold"] if args.gold else [])))
     per_query = []
+    n_skip = [0]
     print(f"== Phase4 simulation: {len(queries)} queries x this run {run_conds}"
-          f"{' (merge existing)' if args.merge else ''} ==\n", flush=True)
+          f"{' (merge existing)' if args.merge else ''} ==", flush=True)
+    if args.resume:
+        n_done_before = sum(1 for e in queries
+                            if all(m in prev_res.get(e["task_id"], {}) for m in run_conds))
+        print(f"   resume: {n_done_before}/{len(queries)} queries already complete\n", flush=True)
+    else:
+        print("", flush=True)
+
+    def atomic_dump(obj):
+        """Write through a temp file + os.replace, so an interrupted run never truncates the
+        result file (every query is flushed, so a long run can always be resumed)."""
+        tmp = args.out + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, args.out)
 
     def dump_summary():
         # Summary is computed live from per_query, covering all methods seen (including historical methods in merge mode)
@@ -155,11 +181,10 @@ def main():
         for m in all_m:
             a = agg[m]; nn = max(1, a[2])
             print(f"{m:14} {a[0]}/{a[2]}={a[0]/nn:6.1%} {a[1]/nn:7.1%}")
-        with open(args.out, "w", encoding="utf-8") as f:
-            json.dump({"meta": {"n": done, "methods": all_m},
-                       "summary": {m: {"SR": agg[m][0] / max(1, agg[m][2]),
-                                       "GC": agg[m][1] / max(1, agg[m][2])} for m in all_m},
-                       "per_query": per_query}, f, ensure_ascii=False, indent=2)
+        atomic_dump({"meta": {"n": done, "methods": all_m},
+                     "summary": {m: {"SR": agg[m][0] / max(1, agg[m][2]),
+                                     "GC": agg[m][1] / max(1, agg[m][2])} for m in all_m},
+                     "per_query": per_query})
         print(f"wrote {args.out}", flush=True)
 
     try:
@@ -172,6 +197,10 @@ def main():
             binding.setdefault("target", binding.get("obj"))
             rec = {"task_id": e["task_id"], "task_type": e["task_type"],
                    "res": dict(prev_res.get(e["task_id"], {}))}   # merge mode keeps historical methods
+            if args.resume and all(m in rec["res"] for m in run_conds):
+                per_query.append(rec)
+                n_skip[0] += 1
+                continue
             line = f"[{e['task_type'][:16]:16}] {e['task_id'][:20]:20} req={sorted(e['required_effects'])}"
             for m in run_conds:
                 if m == "gold":
@@ -188,10 +217,17 @@ def main():
             print("   " + " | ".join(
                 f"{m}:SR={rec['res'][m]['SR']!s:5} GC={rec['res'][m]['GC']:.2f}" for m in run_conds),
                 flush=True)
-            if len(per_query) % 20 == 0:
-                with open(args.out, "w", encoding="utf-8") as f:
-                    json.dump({"meta": {"n": len(per_query), "partial": True},
-                               "per_query": per_query}, f, ensure_ascii=False, indent=2)
+            # flush after every query, so an interruption costs at most one query
+            atomic_dump({"meta": {"n": len(per_query), "partial": True},
+                         "per_query": per_query})
+            n_run = len(per_query) - n_skip[0]
+            if args.restart_every and n_run and n_run % args.restart_every == 0:
+                print(f"    -- rebuilding controller after {n_run} executed queries", flush=True)
+                try:
+                    ctx["ctrl"].stop()
+                except Exception:
+                    pass
+                ctx["ctrl"] = make_controller()
     finally:
         try:
             ctx["ctrl"].stop()

@@ -4,7 +4,18 @@ Unified interface:
   retriever.rank(query_text) -> list of cards sorted by descending score (full-pool ranking).
 """
 import os
-from common import skill_doc, tokenize
+from common import skill_doc, skill_doc_full, tokenize
+
+
+def _docs_of(pool, full_card):
+    """Retrieval documents: skill_doc by default; with full_card=True the symbolic
+    preconditions and the atomic-expanded sub-skill sequence are appended, so that the
+    baseline reads the same fields as the router (see common.skill_struct_text)."""
+    if not full_card:
+        return [skill_doc(c) for c in pool]
+    by_id = {c["skill_id"]: c for c in pool}
+    return [skill_doc_full(c, by_id) for c in pool]
+
 
 _HERE = os.path.dirname(os.path.abspath(__file__))                 # router/code/
 _LOCAL_BGE = os.path.join(_HERE, os.pardir, "models", "bge-small-en-v1.5")
@@ -24,10 +35,13 @@ def _resolve_bge():
 class BM25Retriever:
     name = "B1-BM25"
 
-    def __init__(self, pool):
+    def __init__(self, pool, full_card=False):
         from rank_bm25 import BM25Okapi
         self.pool = pool
-        self._docs = [tokenize(skill_doc(c)) for c in pool]
+        self.full_card = full_card
+        if full_card:
+            self.name = "B1-BM25-Card"
+        self._docs = [tokenize(d) for d in _docs_of(pool, full_card)]
         self.bm25 = BM25Okapi(self._docs)
 
     def rank(self, query):
@@ -45,14 +59,17 @@ class DenseRetriever:
     name = "B2-Dense"
     Q_PREFIX = "Represent this sentence for searching relevant passages: "
 
-    def __init__(self, pool, model_name=None):
+    def __init__(self, pool, model_name=None, full_card=False):
         model_name = model_name or _resolve_bge()
         from sentence_transformers import SentenceTransformer
         import numpy as np
         self.np = np
         self.pool = pool
+        self.full_card = full_card
+        if full_card:
+            self.name = "B2-Dense-Card"
         self.model = SentenceTransformer(model_name)
-        docs = [skill_doc(c) for c in pool]
+        docs = _docs_of(pool, full_card)
         self.doc_emb = self.model.encode(docs, normalize_embeddings=True,
                                          convert_to_numpy=True)
 

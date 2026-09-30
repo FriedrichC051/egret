@@ -14,7 +14,7 @@ import argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import load_pool, load_queries, skill_sig  # noqa: E402
+from common import load_pool, load_queries, skill_sig, skill_struct_text  # noqa: E402
 
 KIMI_BASE = "https://api.moonshot.cn/v1"
 # High-speed variant: 2-5s/call with quality on par with k2.7-code (the standard variant
@@ -71,11 +71,19 @@ def llm_call(system, user, model=KIMI_MODEL, base_url=KIMI_BASE, timeout=120.0,
     return resp.choices[0].message.content
 
 
-def catalog_text(pool):
+def catalog_text(pool, full_card=False, by_id=None):
+    """Skill catalog. With full_card=True each entry also carries its symbolic preconditions
+    and atomic-expanded sub-skill sequence (information-matched baseline setting: the raw
+    structure is given, the recomputed effects are not)."""
+    if full_card and by_id is None:
+        by_id = {c["skill_id"]: c for c in pool}
     lines = []
     for c in pool:
         sig = ",".join(sorted(skill_sig(c))) or "-"
-        lines.append(f"- {c['skill_id']} | {c.get('name', '')} | effects: {sig}")
+        line = f"- {c['skill_id']} | {c.get('name', '')} | effects: {sig}"
+        if full_card:
+            line += " | " + skill_struct_text(c, by_id)
+        lines.append(line)
     return "\n".join(lines)
 
 
@@ -93,10 +101,13 @@ def parse_id_array(text, valid_ids):
 class B0LLMFull:
     name = "B0-LLM-Full"
 
-    def __init__(self, pool, model=KIMI_MODEL, base_url=KIMI_BASE):
+    def __init__(self, pool, model=KIMI_MODEL, base_url=KIMI_BASE, full_card=False):
         self.pool = pool
         self.by_id = {c["skill_id"]: c for c in pool}
-        self.catalog = catalog_text(pool)
+        self.full_card = full_card
+        if full_card:
+            self.name = "B0-LLM-Full-Card"
+        self.catalog = catalog_text(pool, full_card=full_card, by_id=self.by_id)
         self.model = model
         self.base_url = base_url
 

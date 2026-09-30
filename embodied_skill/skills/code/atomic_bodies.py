@@ -231,6 +231,43 @@ def empty_liquid(ctrl, obj):
     return ev, ev.metadata["lastActionSuccess"], ev.metadata.get("errorMessage", "")
 
 
+def _contained_in(ctrl, aid, obj_type):
+    """Is an object of obj_type actually inside the appliance aid? AI2-THOR reports success for
+    a forced placement that in fact lands the object beside the appliance, so containment has to
+    be re-checked through receptacleObjectIds rather than trusted."""
+    ev = ctrl.last_event
+    app = next((o for o in ev.metadata["objects"] if o["objectId"] == aid), None)
+    inside = set((app or {}).get("receptacleObjectIds") or [])
+    for o in find_objects(ev, obj_type):
+        if o["objectId"] in inside:
+            return True, o
+    return False, None
+
+
+def _ensure_contained(ctrl, aid, obj_type, tries_coords=25):
+    """Assert the object is inside the appliance before the appliance is cycled; if not, force it
+    in through GetSpawnCoordinatesAboveReceptacle + PlaceObjectAtPoint and re-check. Without this
+    the appliance would be toggled on an empty cavity and the effect would be lost silently."""
+    ok, _ = _contained_in(ctrl, aid, obj_type)
+    if ok:
+        return True, "already-inside"
+    target = _resolve_nearest(ctrl, obj_type)
+    if target is None:
+        return False, f"cannot locate {obj_type} to re-place"
+    sp = ctrl.step("GetSpawnCoordinatesAboveReceptacle", objectId=aid, anywhere=True)
+    coords = sp.metadata.get("actionReturn") or []
+    app = next((o for o in ctrl.last_event.metadata["objects"] if o["objectId"] == aid), None)
+    if app is not None:
+        ac = app["position"]
+        coords.sort(key=lambda p: (p["x"] - ac["x"]) ** 2 + (p["z"] - ac["z"]) ** 2)
+    for p in coords[:tries_coords]:
+        ctrl.step("PlaceObjectAtPoint", objectId=target["objectId"], position=p)
+        ok, _ = _contained_in(ctrl, aid, obj_type)
+        if ok:
+            return True, "re-placed-inside"
+    return False, "object not inside appliance after re-place"
+
+
 # ---------- Composite atomic skills (body is a primitive sequence, but treated as one sub-goal at the routing layer) ----------
 
 def _appliance_cycle(ctrl, appliance_type, obj, toggle=True):
@@ -250,6 +287,9 @@ def _appliance_cycle(ctrl, appliance_type, obj, toggle=True):
     ev, put_ok, put_info = _robust_put(ctrl, aid, held)
     if not put_ok:
         return ev, False, "put into appliance failed: " + put_info
+    in_ok, in_info = _ensure_contained(ctrl, aid, held_type)
+    if not in_ok:
+        return ctrl.last_event, False, f"not contained in {appliance_type}: {in_info}"
     ctrl.step("CloseObject", objectId=aid, forceAction=True)
     if toggle:
         ctrl.step("ToggleObjectOn", objectId=aid, forceAction=True)
@@ -295,6 +335,9 @@ def clean_object_sink(ctrl, obj):
     ev, put_ok, _ = _robust_put(ctrl, sink["objectId"], held)
     if not put_ok:
         return ev, False, "put into sink failed"
+    in_ok, in_info = _ensure_contained(ctrl, sink["objectId"], held_type)
+    if not in_ok:
+        return ctrl.last_event, False, f"not contained in SinkBasin: {in_info}"
     faucet = _resolve_nearest(ctrl, "Faucet")
     if faucet is not None:
         ctrl.step("ToggleObjectOn", objectId=faucet["objectId"], forceAction=True)

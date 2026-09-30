@@ -1,0 +1,2567 @@
+{
+  "meta": {
+    "n": -1,
+    "seed": 0,
+    "pool_size": 511,
+    "note": "generalization paired conditions: gen-ax3-id vs gen-ax3-held",
+    "generated_at": "2026-09-23T08:33:06"
+  },
+  "queries": [
+    {
+      "task_id": "trial_T20190908_051942_388647",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan20",
+      "binding": {
+        "obj": "Egg",
+        "receptacle": "Microwave"
+      },
+      "instruction": "cool the egg in the refrigerator, put the egg in the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_181023_216915",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan18",
+      "binding": {
+        "obj": "Pan",
+        "receptacle": "StoveBurner"
+      },
+      "instruction": "Place a chilled frying pan on the stove.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_150807_823817",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan5",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a chilled apple in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_082934_483899",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan6",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "GarbageCan"
+      },
+      "instruction": "Put a frozen tomato in to garbage bin.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_232648_241836",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan7",
+      "binding": {
+        "obj": "Pan",
+        "receptacle": "DiningTable"
+      },
+      "instruction": "Put a chilled pan on a kitchen table",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_101835_683416",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan15",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "put a chilled, cut slice of lettuce in the sink",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_044933_815840",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan14",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "put a chilled apple on a kitchen counter",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_234112_645480",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan24",
+      "binding": {
+        "obj": "Egg",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a cold egg in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_102940_350963",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan11",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a slice of bread into a microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_024426_412044",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan17",
+      "binding": {
+        "obj": "WineBottle",
+        "receptacle": "DiningTable"
+      },
+      "instruction": "Set a chilled bottle of wine on the table.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_045605_307949",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan7",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Chill the bread from the counter in the fridge and put it to the left of the stove.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_173120_350651",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan27",
+      "binding": {
+        "obj": "Plate",
+        "receptacle": "Cabinet"
+      },
+      "instruction": "Put the plate from the table inside the refrigerator, and then store it in the cabinet under the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_073447_193556",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan13",
+      "binding": {
+        "obj": "Potato",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Place a cold potato slice in the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_063754_216554",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan12",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put a chilled tomato on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_063844_274181",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan12",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put a cool tomato on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_075813_148407",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan27",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "DiningTable"
+      },
+      "instruction": "Slice the bread, take a slice, put the slice in the fridge, put the slice on the table",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_071506_149865",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan4",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Cut a tomato slice, refrigerate it, place it on a sponge",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_210937_878489",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan19",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Take the apple from the table, put it in the refrigerator, take it out, heat the apple in the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_clean_then_heat_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_clean_then_heat_then_place__missing_clean"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_184242_348366",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan16",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "CoffeeMachine"
+      },
+      "instruction": "Place a cooled mug on a coffee machine.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_205324_559361",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan1",
+      "binding": {
+        "obj": "Plate",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "cool off a white plate",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_192817_654400",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan17",
+      "binding": {
+        "obj": "Cup",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Take the cup out of the microwave, put it in the fridge, back in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_clean_then_heat_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_clean_then_heat_then_place__missing_clean"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_165525_911839",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan12",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a chilled slice of tomato in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_012524_159092",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan18",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a cold tomato in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_195826_107019",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan19",
+      "binding": {
+        "obj": "Cup",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Place the cup from the table in the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_041830_078220",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan18",
+      "binding": {
+        "obj": "Potato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "place a cold potato slice in the oven",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_015957_501112",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan2",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "place a cold lettuce slice in the sink",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_004531_429065",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan21",
+      "binding": {
+        "obj": "Pot",
+        "receptacle": "DiningTable"
+      },
+      "instruction": "Put a cold pot on a table.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_195943_081289",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan2",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "GarbageCan"
+      },
+      "instruction": "Place a cool apple in the white bin.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_231206_512424",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan7",
+      "binding": {
+        "obj": "Plate",
+        "receptacle": "Cabinet"
+      },
+      "instruction": "Put a chilled plate in a cabinet.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_222555_651605",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan11",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Place a chilled head of lettuce on a counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_193525_796595",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan25",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "GarbageCan"
+      },
+      "instruction": "Place a chilled apple section into the bin.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_192823_237997",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan21",
+      "binding": {
+        "obj": "Cup",
+        "receptacle": "SideTable"
+      },
+      "instruction": "Place a chilled cup on the table.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_215856_374127",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan23",
+      "binding": {
+        "obj": "Pan",
+        "receptacle": "StoveBurner"
+      },
+      "instruction": "Put a chilled pan on the stove.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_112912_154874",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan20",
+      "binding": {
+        "obj": "Bowl",
+        "receptacle": "Cabinet"
+      },
+      "instruction": "put chilled bowl in cabinet",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190910_173916_331859",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan13",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a chilled tomato in the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_042713_075616",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan1",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Place a chilled head of lettuce on a counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_022535_813547",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan18",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "DiningTable"
+      },
+      "instruction": "Place a cold apple slice on the table.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_013001_399963",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_seen",
+      "floor_plan": "FloorPlan21",
+      "binding": {
+        "obj": "Apple",
+        "receptacle": "SideTable"
+      },
+      "instruction": "place a sliced apple down on the black table at the end of the kitchen counter",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_slice_then_place__missing_close_cabinet"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_121559_082363",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "Cabinet"
+      },
+      "instruction": "Put a cold coffee up in the bottom cabinet.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_121635_622676",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "Cabinet"
+      },
+      "instruction": "Place a chilled mug in a cabinet.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_121710_650938",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "Cabinet"
+      },
+      "instruction": "Put a chilled mug in a cabinet.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_204424_983859",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "GarbageCan"
+      },
+      "instruction": "Put a chilled slice of lettuce in the trash can.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_213855_654145",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "GarbageCan"
+      },
+      "instruction": "Place a cold lettuce slice in the black trash can.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_213642_049125",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "GarbageCan"
+      },
+      "instruction": "Put a cold slice of lettuce in the garbage bin.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_183853_958104",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "CoffeeMachine"
+      },
+      "instruction": "Cool a mug in the fridge",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_183807_477267",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "CoffeeMachine"
+      },
+      "instruction": "get mug from coffee maker, chill, and return mug to coffee maker",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_183715_299073",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Mug",
+        "receptacle": "CoffeeMachine"
+      },
+      "instruction": "Move a chilled mug to the coffee maker.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_102608_318800",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a cooled tomato in the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_102710_795182",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Place a chilled tomato in a microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_102644_926781",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "cook a chilled tomato",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_033306_962974",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Potato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "put a cooled potato inside the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_033157_424297",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Potato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "place a potato inside the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_cabinet_and_empty_then_heat_then_place__missing_heat"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__missing"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_033228_194678",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Potato",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a chilled potato in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_061838_159982",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Slice a tomato and cool a slice of it",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_062026_099967",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Slice a tomato and cool it.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_061805_153515",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Tomato",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put a chilled slice of tomato on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_040327_147149",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Place a cool lettuce in the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_040303_217739",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "To chill lettuce for cooking.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_040233_171346",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Place chilled lettuce into a sink",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_091747_866951",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Cool some bread and the place it on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_091811_414150",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put chilled bread on the counter, right of the fridge.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_091835_825830",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put a cool loaf of bread on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_173120_648218",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Egg",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Pick up the egg, put it in the refrigerator and then put it in the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_173149_648833",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Egg",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Put a chilled egg in the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190907_173215_875825",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Egg",
+        "receptacle": "SinkBasin"
+      },
+      "instruction": "Put a chilled egg into the sink.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_114656_768805",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Pan",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put a cold pan on the counter top on top of the dishwasher.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_114622_738670",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Pan",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put a chilled pan on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190908_114545_244903",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Pan",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Place a chilled pan on a counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_224631_058932",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a cold slice of bread in the microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_224718_745017",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "Microwave"
+      },
+      "instruction": "Put a cold slice of bread in a microwave.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190906_224843_443882",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Bread",
+        "receptacle": "Microwave"
+      },
+      "instruction": "placed a cooled slice of bread that you cut inside of the microwave",
+      "required_effects": [
+        "at_receptacle",
+        "isCold",
+        "isSliced"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_slice_then_place",
+        "put_object",
+        "slice_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "cool_then_clean_then_slice_then_place__missing_clean"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "heat_then_slice_then_place__lookalike_cool"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_174840_771703",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put chilled lettuce on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_174807_646433",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "Put chilled lettuce on the counter.",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    },
+    {
+      "task_id": "trial_T20190909_123133_763972",
+      "task_type": "pick_cool_then_place_in_recep",
+      "split": "valid_unseen",
+      "floor_plan": "FloorPlan10",
+      "binding": {
+        "obj": "Lettuce",
+        "receptacle": "CounterTop"
+      },
+      "instruction": "chill the lettuce then return it to the counter",
+      "required_effects": [
+        "at_receptacle",
+        "isCold"
+      ],
+      "gt_ids": [
+        "cool_object_fridge",
+        "cool_then_place",
+        "put_object"
+      ],
+      "methods": {
+        "gen-ax3-id": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "clean_then_empty_then_place__lookalike_cool"
+          ]
+        },
+        "gen-ax3-held": {
+          "ranked_ids": [],
+          "chosen_ids": [
+            "retrieve_from_fridge_and_heat_then_place__lookalike"
+          ]
+        }
+      }
+    }
+  ]
+}

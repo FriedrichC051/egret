@@ -83,7 +83,14 @@ class M1RuleDomain:
 
     def __init__(self, pool, k=20, retriever=None, goal_fn=None, name=None,
                  l4_scorer=None, use_retrieval=False,
-                 no_legality=False, no_repair=False, use_declared=False):
+                 no_legality=False, no_repair=False, use_declared=False,
+                 select_mode="greedy"):
+        assert select_mode in ("greedy", "exact", "top1"), select_mode
+        # select_mode: "greedy" (default, main path) / "exact" (exact minimum cover)
+        #   / "top1" (single best candidate, no cover solving). The latter two are controls:
+        #   the target vocabulary holds only 6 effects, so an exact solver is cheap, and
+        #   top-1 is a competitive alternative to the coverage-first greedy selection.
+        self.select_mode = select_mode
         self.pool = pool
         self.by_id = {c["skill_id"]: c for c in pool}
         # WP5 axis-5 anti-overfitting ablation: remove symbolic scaffolding to test whether a
@@ -133,6 +140,67 @@ class M1RuleDomain:
         if places_at_target(card, self.by_id, binding):
             sig.add("at_receptacle")
         return sig
+
+    @staticmethod
+    def _tiebreak_key(rank, card, sig, goal, scores):
+        """Tie-break key shared with the greedy path: fewer extra effects -> higher learned
+        score -> earlier rank."""
+        sc = -scores.get(card["skill_id"], 0.0) if scores else 0.0
+        return (len(sig - goal), sc, rank)
+
+    def _cover_exact(self, cands, goal, scores=None):
+        """**Exact** minimum cover (control for the greedy path). The target effect vocabulary
+        holds only 6 tokens, so candidates collapse by `sig & goal` into at most 2^6 = 64 mask
+        classes and a BFS over those 64 states yields a true minimum-cardinality set."""
+        order = sorted(goal)
+        bit = {t: 1 << i for i, t in enumerate(order)}
+        full = (1 << len(order)) - 1
+
+        best_of = {}                                  # mask -> (key, card)
+        for rank, card, sig in cands:
+            m = 0
+            for t in sig & goal:
+                m |= bit[t]
+            if m == 0:
+                continue
+            key = self._tiebreak_key(rank, card, sig, goal, scores)
+            if m not in best_of or key < best_of[m][0]:
+                best_of[m] = (key, card)
+        if not best_of:
+            return []
+
+        # BFS: state = covered mask, edge = pick one mask class; first hit of `full` is minimal
+        from collections import deque
+        prev = {0: None}
+        q = deque([0])
+        while q:
+            cur = q.popleft()
+            if cur == full:
+                break
+            for m in best_of:
+                nxt = cur | m
+                if nxt != cur and nxt not in prev:
+                    prev[nxt] = (cur, m)
+                    q.append(nxt)
+        if full not in prev:
+            # not fully coverable: fall back to greedy for a best-effort partial cover
+            return self._cover(cands, goal, scores)
+        chosen, cur = [], full
+        while prev[cur] is not None:
+            cur, m = prev[cur]
+            chosen.append(best_of[m][1])
+        return list(reversed(chosen))
+
+    def _select_top1(self, cands, goal, scores=None):
+        """Take a single best candidate without solving for coverage. Used as a *competitive*
+        control for whether coverage selection is needed at all."""
+        if not cands:
+            return []
+
+        def key(t):
+            rank, card, sig = t
+            return (-len(sig & goal),) + self._tiebreak_key(rank, card, sig, goal, scores)
+        return [min(cands, key=key)[1]]
 
     def _cover(self, cands, goal, scores=None):
         """Greedy set-cover: each round pick (max new coverage -> [high L4 learned retention
@@ -187,7 +255,12 @@ class M1RuleDomain:
                 best = max(legal, key=lambda t: scores.get(t[1]["skill_id"], -1e9))
                 chosen = [best[1]]
             return chosen
-        chosen = self._cover(legal, goal, scores)
+        if self.select_mode == "exact":
+            chosen = self._cover_exact(legal, goal, scores)
+        elif self.select_mode == "top1":
+            chosen = self._select_top1(legal, goal, scores)
+        else:
+            chosen = self._cover(legal, goal, scores)
         if not chosen and legal:                  # fallback: even with no coverage, return the earliest legal card
             chosen = [legal[0][1]]
         return chosen

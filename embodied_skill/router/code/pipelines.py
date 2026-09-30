@@ -15,7 +15,8 @@ import argparse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-from common import load_pool, load_queries, skill_sig, skill_doc  # noqa: E402
+from common import (load_pool, load_queries, skill_sig, skill_doc,  # noqa: E402
+                    skill_doc_full, skill_struct_text)
 from retrievers import DenseRetriever                             # noqa: E402
 from llm_baselines import llm_call, SYSTEM, parse_id_array        # noqa: E402
 
@@ -31,37 +32,49 @@ def _resolve_reranker():
     return "BAAI/bge-reranker-base"
 
 
-def _catalog(cards):
+def _catalog(cards, full_card=False, by_id=None):
     lines = []
     for c in cards:
         sig = ",".join(sorted(skill_sig(c))) or "-"
-        lines.append(f"- {c['skill_id']} | {c.get('name', '')} | effects: {sig}")
+        line = f"- {c['skill_id']} | {c.get('name', '')} | effects: {sig}"
+        if full_card:
+            line += " | " + skill_struct_text(c, by_id)
+        lines.append(line)
     return "\n".join(lines)
 
 
 class B3SkillFlow:
     name = "B3-SkillFlow"
 
-    def __init__(self, pool, k=20, m=8, retriever=None):
+    def __init__(self, pool, k=20, m=8, retriever=None, full_card=False):
         self.pool = pool
         self.by_id = {c["skill_id"]: c for c in pool}
         self.k = k
         self.m = m
-        self.retriever = retriever or DenseRetriever(pool)
+        self.full_card = full_card
+        if full_card:
+            self.name = "B3-SkillFlow-Card"
+        # In the information-matched setting all three stages are upgraded together:
+        # retrieval, reranking and the LLM all see the card structure.
+        self.retriever = retriever or DenseRetriever(pool, full_card=full_card)
         from sentence_transformers import CrossEncoder
         self.reranker = CrossEncoder(_resolve_reranker())
+
+    def _doc(self, card):
+        return skill_doc_full(card, self.by_id) if self.full_card else skill_doc(card)
 
     def select(self, query):
         # (1) Dense retrieval top-K
         cand = self.retriever.rank(query)[:self.k]
         # (2) cross-encoder rerank -> top-M
-        pairs = [(query, skill_doc(c)) for c in cand]
+        pairs = [(query, self._doc(c)) for c in cand]
         scores = self.reranker.predict(pairs)
         order = sorted(range(len(cand)), key=lambda i: -scores[i])
         short = [cand[i] for i in order[:self.m]]
         # (3) LLM picks the minimal set from the M candidates
         by_id = {c["skill_id"]: c for c in short}
-        user = (f"Skill candidates ({len(short)} total, sorted by relevance):\n{_catalog(short)}\n\n"
+        user = (f"Skill candidates ({len(short)} total, sorted by relevance):\n"
+                f"{_catalog(short, self.full_card, self.by_id)}\n\n"
                 f"Task: {query}\n\nFrom the candidates above, select the minimal skill set that "
                 f"completes the task (a JSON array of skill_id, choosing only from the candidates).")
         text = llm_call(SYSTEM, user, timeout=120.0)  # aligned with b0: 60s would mass-timeout during API peaks

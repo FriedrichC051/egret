@@ -79,7 +79,25 @@ def eval_retriever(retriever, queries, entries, by_id):
     return {k: v / n for k, v in agg.items()}, dt
 
 
-def eval_selector(selector, queries, entries, by_id, retries=1, only_missing=False):
+def dump_selections(path, entries, queries, n, seed, pool_size):
+    """Write selections.json through a temp file + os.replace, so an interrupted run never
+    truncates it. Called after every query for the API-backed methods, which makes a
+    half-finished run resumable via --only-missing instead of restarting from scratch."""
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    out = {
+        "meta": {"n": n, "seed": seed, "pool_size": pool_size,
+                 "generated_at": datetime.now().isoformat(timespec="seconds")},
+        "queries": [entries[q_key(q)] for q in queries],
+    }
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(out, f, ensure_ascii=False, indent=2)
+    os.replace(tmp, path)
+    return out
+
+
+def eval_selector(selector, queries, entries, by_id, retries=1, only_missing=False,
+                  flush=None):
     """LLM/pipeline selection methods: directly produce the chosen set, scored on sel_hit/sel_fullcov.
     Per-query fault tolerance: on timeout/exception, retry a single query up to `retries` times; if it
     still fails, record it as empty and continue (so one query does not drag down the whole run)."""
@@ -123,6 +141,8 @@ def eval_selector(selector, queries, entries, by_id, retries=1, only_missing=Fal
         }
         print(f"  [{i+1}/{n}] {time.time()-qt:4.1f}s cov={'✓' if s['sel_fullcov'] else '✗'} "
               f"-> {[c['skill_id'] for c in chosen]}", flush=True)
+        if flush is not None:
+            flush()
     dt = time.time() - t0
     if fails:
         print(f"  (b0 failed on {fails}/{n} queries, recorded empty)")
@@ -156,7 +176,9 @@ def main():
     ap.add_argument("--n", type=int, default=100, help="number of sampled queries (-1 = all)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--methods", nargs="+", default=["bm25"],
-                    choices=["bm25", "dense", "b0", "b3", "m1", "m1f", "m1h", "m1h4", "m1h4nr", "b4"])
+                    choices=["bm25", "dense", "b0", "b3", "m1", "m1f", "m1h", "m1h4", "m1h4nr", "b4",
+                             # information-matched baselines: same per-skill fields as the router
+                             "bm25c", "densec", "b0c", "b3c"])
     ap.add_argument("--out", default=os.path.join(EVAL_DATA, "selections.json"))
     ap.add_argument("--gt", default=None,
                     help="GT jsonl filename or absolute path (default gt_kitchen.jsonl; headline uses gt_kitchen_eval.jsonl)")
@@ -175,6 +197,14 @@ def main():
     print(f"skill pool {len(pool)} entries; eval queries {nn}; methods={args.methods}\n")
 
     entries = load_or_init_selections(args.out, args.n, args.seed, len(pool), queries)
+
+    def _flush():
+        dump_selections(args.out, entries, queries, args.n, args.seed, len(pool))
+
+    def _print_sel(r, res, dt):
+        print(f"== {r.name} == (total {dt:.1f}s, {dt/nn:.1f}s/query)")
+        print(f"  Sel-Hit={res['sel_hit']:.2f}  Sel-FullCov={res['sel_fullcov']:.2f}  "
+              f"avg selected={res['sel_size']:.1f}\n")
 
     def _print_ret(r, res, bt, dt):
         print(f"== {r.name} == (build {bt:.1f}s, retrieval {dt:.1f}s, {dt/nn*1000:.1f}ms/query)")
@@ -209,10 +239,8 @@ def main():
             from llm_baselines import B0LLMFull
             r = B0LLMFull(pool)
             res, dt = eval_selector(r, queries, entries, by_id,
-                                    only_missing=args.only_missing)
-            print(f"== {r.name} == (total {dt:.1f}s, {dt/nn:.1f}s/query)")
-            print(f"  Sel-Hit={res['sel_hit']:.2f}  Sel-FullCov={res['sel_fullcov']:.2f}  "
-                  f"avg selected={res['sel_size']:.1f}\n")
+                                    only_missing=args.only_missing, flush=_flush)
+            _print_sel(r, res, dt)
         except Exception as ex:
             print(f"!! b0 skipped: {ex}\n")
 
@@ -220,13 +248,55 @@ def main():
         try:
             from pipelines import B3SkillFlow
             r = B3SkillFlow(pool)
-            res, dt = eval_selector(r, queries, entries, by_id, retries=0,
-                                    only_missing=args.only_missing)
-            print(f"== {r.name} == (total {dt:.1f}s, {dt/nn:.1f}s/query)")
-            print(f"  Sel-Hit={res['sel_hit']:.2f}  Sel-FullCov={res['sel_fullcov']:.2f}  "
-                  f"avg selected={res['sel_size']:.1f}\n")
+            # retries=1: a single retry, otherwise transient API timeouts are recorded as empty
+            # selections and the baseline is reported lower than it actually is.
+            res, dt = eval_selector(r, queries, entries, by_id, retries=1,
+                                    only_missing=args.only_missing, flush=_flush)
+            _print_sel(r, res, dt)
         except Exception as ex:
             print(f"!! b3 skipped: {ex}\n")
+
+    if "bm25c" in args.methods:
+        try:
+            from retrievers import BM25Retriever
+            t = time.time()
+            r = BM25Retriever(pool, full_card=True)
+            bt = time.time() - t
+            res, dt = eval_retriever(r, queries, entries, by_id)
+            _print_ret(r, res, bt, dt)
+        except Exception as ex:
+            print(f"!! bm25c skipped: {ex}\n")
+
+    if "densec" in args.methods:
+        try:
+            from retrievers import DenseRetriever
+            t = time.time()
+            r = DenseRetriever(pool, full_card=True)
+            bt = time.time() - t
+            res, dt = eval_retriever(r, queries, entries, by_id)
+            _print_ret(r, res, bt, dt)
+        except Exception as ex:
+            print(f"!! densec skipped: {ex}\n")
+
+    if "b0c" in args.methods:
+        try:
+            from llm_baselines import B0LLMFull
+            r = B0LLMFull(pool, full_card=True)
+            res, dt = eval_selector(r, queries, entries, by_id,
+                                    only_missing=args.only_missing, flush=_flush)
+            _print_sel(r, res, dt)
+        except Exception as ex:
+            print(f"!! b0c skipped: {ex}\n")
+
+    if "b3c" in args.methods:
+        try:
+            from pipelines import B3SkillFlow
+            r = B3SkillFlow(pool, full_card=True)
+            res, dt = eval_selector(r, queries, entries, by_id, retries=1,
+                                    only_missing=args.only_missing, flush=_flush)
+            _print_sel(r, res, dt)
+        except Exception as ex:
+            print(f"!! b3c skipped: {ex}\n")
 
     if "m1" in args.methods:
         try:
@@ -325,13 +395,7 @@ def main():
             print(f"!! b4 skipped: {ex}\n")
 
     os.makedirs(EVAL_DATA, exist_ok=True)
-    out = {
-        "meta": {"n": args.n, "seed": args.seed, "pool_size": len(pool),
-                 "generated_at": datetime.now().isoformat(timespec="seconds")},
-        "queries": [entries[q_key(q)] for q in queries],
-    }
-    with open(args.out, "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=2)
+    out = dump_selections(args.out, entries, queries, args.n, args.seed, len(pool))
     methods_present = sorted({m for e in out["queries"] for m in e["methods"]})
     print(f"wrote {args.out}\n  {len(out['queries'])} queries; methods included: {methods_present}")
 
