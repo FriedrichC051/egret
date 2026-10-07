@@ -1,6 +1,6 @@
 # EGRET: Effect-Grounded Recomputation for Embodied Tasks
 
-*Rethinking Skills for Embodied AI: A Verifiable Skill Framework, Benchmark, and Protocol for LLM-Synthesized Libraries.*
+*Rethinking Skills for Embodied AI: A Verifiable Skill Framework and Benchmark for LLM-Synthesized Libraries.*
 
 This repository contains the code, skill pool, benchmark, and precomputed artifacts to
 reproduce all quantitative results of the paper.
